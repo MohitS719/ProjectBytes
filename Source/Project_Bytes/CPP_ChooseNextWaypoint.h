@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AIController.h"
+#include "PatrolRoute.h"
 #include "CPP_ChooseNextWaypoint.generated.h"
 
 /**
@@ -23,4 +25,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 		struct FBlackboardKeySelector IndexKey;
+
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
+		struct FBlackboardKeySelector WaypointKey;
 };

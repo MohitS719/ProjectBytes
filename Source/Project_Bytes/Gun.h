@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Gun.generated.h"
 
 UCLASS()
@@ -26,6 +27,10 @@ public:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	TSubclassOf<class AProject_BytesProjectile> ProjectileClass;
+
+	/** Particle Effect to spawn */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	UParticleSystem* ParticleEffect;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)

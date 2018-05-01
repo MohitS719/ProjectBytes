@@ -86,6 +86,14 @@ void AExterminatorMannequin::UnPossessed()
 
 void AExterminatorMannequin::PullTrigger()
 {
-	Gun->OnFire();
+	if (Ammo > 0)
+	{
+		Gun->OnFire();
+		Ammo--;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("RELOAD!"))
+	}
 }
 

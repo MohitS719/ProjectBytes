@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void PullTrigger();
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon")
+	int Ammo = 10;
+
 private:
 	// Pawn mesh 1st person view (arms, seen only by self
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)

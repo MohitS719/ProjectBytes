@@ -36,7 +36,6 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AGun::OnFire()
@@ -57,6 +56,9 @@ void AGun::OnFire()
 
 			// spawn the projectile at the muzzle
 			World->SpawnActor<AProject_BytesProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+
+			// Spawn Particle
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleEffect, FP_MuzzleLocation->GetComponentLocation(), FP_MuzzleLocation->GetComponentRotation());
 		}
 	}
 

@@ -35,7 +35,10 @@ public:
 	void PullTrigger();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon")
-	int Ammo = 10;
+	int Ammo = 100;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon")
+	int MaxAmmo = 100;
 
 private:
 	// Pawn mesh 1st person view (arms, seen only by self

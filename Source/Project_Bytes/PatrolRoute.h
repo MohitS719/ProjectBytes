@@ -18,7 +18,6 @@ class PROJECT_BYTES_API UPatrolRoute : public UActorComponent
 public:	
 	TArray <AActor*> GetPatrolPoints() const;
 
-private:
-	UPROPERTY(EditInstanceOnly, Category = "Patrol Route")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Patrol Route")
 	TArray <AActor*> PatrolPoints;
 };

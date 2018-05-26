@@ -40,11 +40,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon")
 	int MaxAmmo = 100;
 
-private:
 	// Pawn mesh 1st person view (arms, seen only by self
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* Mesh1P;;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Mesh)
+	class USkeletalMeshComponent* Mesh1P;
 
+private:
 	// First person camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;

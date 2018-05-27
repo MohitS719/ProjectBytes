@@ -19,6 +19,40 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** Handles moving forward/backward */
+	void MoveForward(float Val);
+
+	/** Handles stafing movement, left and right */
+	void MoveRight(float Val);
+
+	/** Sprint */
+	void GoToSprint();
+
+	/** Walk */
+	void GoToWalk();
+
+	/**
+	* Called via input to turn at a given rate.
+	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	*/
+	void TurnAtRate(float Rate);
+
+	/**
+	* Called via input to turn look up/down at a given rate.
+	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	*/
+	void LookUpAtRate(float Rate);
+
+public:
+
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseTurnRate;
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	float BaseLookUpRate;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -57,7 +91,7 @@ public:
 
 	// Damage Amount
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	float Damage = 10.0;
+	float WeaponDamage = 10.0;
 
 	// Display player ammo full
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
@@ -75,6 +109,14 @@ public:
 	// Player Max Health
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
 	float MaxHealth = 100.0;
+
+	// Heal Player, returns successful healing or not
+	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	bool Heal(float Amount);
+
+	// Damage player, return true if damaged
+	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	bool TakeDamage(float Amount);
 
 	// Display player health full
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
@@ -101,8 +143,16 @@ public:
 	int MaxStamina = 10;
 
 	// Player Tokens
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int Tokens = 10;
+
+	// Increase Player Token
+	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	void IncreaseTokens(int IncreaseAmount);
+
+	// Purchase using Player Token
+	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	bool Purchase(int UpgradePrice, int UpgradeType);
 
 
 private:
@@ -116,5 +166,11 @@ private:
 
 	// Attaching Gun BP
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	AGun *Gun;
+	AGun *Gun; 
+
+	// Character Movement Component
+	class UCharacterMovementComponent *CharacterMovement;
+
+	// Walk speed
+	float WalkSpeed;
 };

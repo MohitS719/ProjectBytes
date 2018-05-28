@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ExterminatorMannequin.generated.h"
 
+
 UCLASS()
 class PROJECT_BYTES_API AExterminatorMannequin : public ACharacter
 {
@@ -166,10 +167,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	void IncreaseTokens(int IncreaseAmount);
 
-	// Purchase using Player Token
-	UFUNCTION(BlueprintCallable, Category = "Character Details")
-	bool Purchase(int UpgradePrice, int UpgradeType);
-
 
 private:
 	// Pawn mesh 1st person view (arms, seen only by self
@@ -189,4 +186,5 @@ private:
 
 	// Walk speed
 	float WalkSpeed = 500.0f, SprintSpeed = 1000.f;
+
 };

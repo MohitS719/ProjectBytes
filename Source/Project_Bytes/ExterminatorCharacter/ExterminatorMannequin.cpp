@@ -14,6 +14,7 @@
 // Sets default values
 AExterminatorMannequin::AExterminatorMannequin()
 {
+	// Setting Character Movement
 	CharacterMovement = GetCharacterMovement();
 	CharacterMovement->MaxWalkSpeed = WalkSpeed;
 
@@ -278,59 +279,4 @@ void AExterminatorMannequin::IncreaseTokens(int IncreaseAmount)
 	Tokens += IncreaseAmount;
 
 	return;
-}
-
-bool AExterminatorMannequin::Purchase(int UpgradePrice, int UpgradeType)
-{
-	bool PurchaseSuccess = false;
-
-	if (Tokens >= UpgradePrice)		// Able to afford upgrade
-	{
-		switch (UpgradeType)		// Selecting the upgrade for puchase
-		{
-		// Max Ammo Capacity Increase
-		case 1:	
-			MaxAmmo += 10;			// Increase Max Ammo Capacity
-			PurchaseSuccess = true;
-			break;
-
-		// Damage Increase
-		case 2:
-			WeaponDamage += 5.0;			// Increase Damage of Weapon
-			PurchaseSuccess = true;
-			break;
-
-		// Max Health Capacity Increase
-		case 3:
-			MaxHealth += 10;		// Increase Max Health
-			PurchaseSuccess = true;
-			break;
-
-		// Replenish Health
-		case 4:
-			if (Health < MaxHealth)	// Replenish possible
-			{
-				Health = MaxHealth;	// Heal
-				PurchaseSuccess = true;
-			}
-			break;
-
-		// Replenish Ammo
-		case 5:	
-			if (Ammo < MaxAmmo)	// Replenish possible
-			{
-				Ammo = MaxAmmo;	// Replenish Ammo
-				PurchaseSuccess = true;
-			}
-			break;
-		}
-		
-		// Check if Purchase successful
-		if (PurchaseSuccess)
-		{
-			Tokens -= UpgradePrice;	// Deduct upgrade price
-		}
-	}
-
-	return PurchaseSuccess;			// Purchase unsuccessful
 }

@@ -103,11 +103,11 @@ public:
 	*/
 
 	// Player Health
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	float Health = 100.0;
 
 	// Player Max Health
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	float MaxHealth = 100.0;
 
 	// Heal Player, returns successful healing or not
@@ -127,7 +127,7 @@ public:
 	bool bTakingDamage = false;
 
 	// Player Dead?
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	bool bIsDead = false;
 	
 	// Player Death Called?
@@ -135,13 +135,29 @@ public:
 	bool bDeathEventCalled = false;
 
 	// Player Stamina
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int Stamina = 10;
 
 	// Player Max Stamina
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int MaxStamina = 10;
 
+private:
+	// Regenerate stamina
+	UFUNCTION()
+	void RegenerateStamina();
+
+	// Deplete Stamina
+	UFUNCTION()
+	void DepleteStamina();
+
+	// Timer Handle for Stamina regeneration
+	FTimerHandle StaminaRegenerateTimerHandle;
+
+	// Timer Handle for Stamina depletion
+	FTimerHandle StaminaDepleteTimerHandle;
+
+public:
 	// Player Tokens
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int Tokens = 10;
@@ -172,5 +188,5 @@ private:
 	class UCharacterMovementComponent *CharacterMovement;
 
 	// Walk speed
-	float WalkSpeed;
+	float WalkSpeed = 500.0f, SprintSpeed = 1000.f;
 };

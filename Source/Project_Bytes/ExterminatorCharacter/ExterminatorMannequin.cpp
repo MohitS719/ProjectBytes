@@ -9,12 +9,13 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Public/TimerManager.h"
 
 // Sets default values
 AExterminatorMannequin::AExterminatorMannequin()
 {
 	CharacterMovement = GetCharacterMovement();
-	WalkSpeed = CharacterMovement->MaxWalkSpeed;
+	CharacterMovement->MaxWalkSpeed = WalkSpeed;
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -119,12 +120,49 @@ void AExterminatorMannequin::MoveRight(float Value)
 
 void AExterminatorMannequin::GoToSprint()
 {
-	CharacterMovement->MaxWalkSpeed = WalkSpeed * 2.0;
+	if (Stamina > 0)	// Able to sprint
+	{
+		// Is Regeneration going on?
+		if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
+		{
+			// Don't Regenrate Stamina anymore
+			GetWorldTimerManager().ClearTimer(StaminaRegenerateTimerHandle);
+		}
+
+		// Set character to sprint
+		CharacterMovement->MaxWalkSpeed = SprintSpeed;
+
+		// Depleting Stamina by 1 per second
+		GetWorldTimerManager().SetTimer(StaminaDepleteTimerHandle, this, &AExterminatorMannequin::DepleteStamina, 1.0f, true);
+	}
+	else				// Not able to sprint. Out of breath
+	{
+		GoToWalk();		// Slow down
+	}
+
+	return;
 }
 
 void AExterminatorMannequin::GoToWalk()
 {
-	CharacterMovement->MaxWalkSpeed = WalkSpeed / 2.0;
+	// Is Depletion going on?
+	if (GetWorldTimerManager().IsTimerActive(StaminaDepleteTimerHandle))
+	{
+		// Don't Deplete Stamina anymore
+		GetWorldTimerManager().ClearTimer(StaminaDepleteTimerHandle);
+	}
+
+	// Set character to normal walking speed
+	CharacterMovement->MaxWalkSpeed = WalkSpeed;
+
+	// Is Stamina not Full?
+	if (Stamina < MaxStamina)
+	{
+		// Regenerate Stamina by 1 per second
+		GetWorldTimerManager().SetTimer(StaminaRegenerateTimerHandle, this, &AExterminatorMannequin::RegenerateStamina, 1.0f, true);
+	}
+
+	return;
 }
 
 void AExterminatorMannequin::TurnAtRate(float Rate)
@@ -200,6 +238,39 @@ bool AExterminatorMannequin::TakeDamage(float Amount)
 	}
 
 	return bIsDead;
+}
+
+void AExterminatorMannequin::RegenerateStamina()
+{
+	if (Stamina < MaxStamina)
+	{
+		++Stamina;
+	}
+	else if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
+	{
+		// Don't Deplete Stamina anymore
+		GetWorldTimerManager().ClearTimer(StaminaRegenerateTimerHandle);
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Walking"));
+
+	return;
+}
+
+void AExterminatorMannequin::DepleteStamina()
+{
+	if (Stamina > 0)
+	{
+		--Stamina;
+	}
+	else
+	{
+		GoToWalk();
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Sprinting"));
+
+	return;
 }
 
 void AExterminatorMannequin::IncreaseTokens(int IncreaseAmount)

@@ -74,29 +74,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon Details")
 	void PullTrigger();
 
-	// Ammo of gun
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	int Ammo = 100;
-
-	// Max Ammo
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	int MaxAmmo = 100;
-
-	// Clip Size
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	int ClipSize = 100;
-
-	// Max Clip Size
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	int MaxClipSize = 100;
-
-	// Damage Amount
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	float WeaponDamage = 10.0;
-
-	// Display player ammo full
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	bool bDisplayAmmoFull = false;
 
 	/*
 		Character Detail Specific Variables And Functions
@@ -167,6 +144,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	void IncreaseTokens(int IncreaseAmount);
 
+	// Attaching Gun BP
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	AGun *Shotgun;
 
 private:
 	// Pawn mesh 1st person view (arms, seen only by self
@@ -176,10 +156,6 @@ private:
 	// First person camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
-
-	// Attaching Gun BP
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	AGun *Gun; 
 
 	// Character Movement Component
 	class UCharacterMovementComponent *CharacterMovement;

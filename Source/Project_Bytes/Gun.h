@@ -21,6 +21,37 @@ class PROJECT_BYTES_API AGun : public AActor
 	class USceneComponent* FP_MuzzleLocation;
 	
 public:	
+	// Ammo of gun
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
+	int Ammo = 100;
+
+	// Max Ammo
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
+	int MaxAmmo = 100;
+
+	// Clip Size
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
+	int ClipSize = 100;
+
+	// Max Clip Size
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
+	int MaxClipSize = 100;
+
+	// Damage Amount
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
+	float WeaponDamage = 10.0;
+
+	// Display player ammo full
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
+	bool bDisplayAmmoFull = false;
+
+	// Function to Increase Ammo
+	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	bool IncreaseAmmo(int Amount);
+
+
+public:
+
 	// Sets default values for this actor's properties
 	AGun();
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../ExterminatorCharacter/ExterminatorMannequin.h"
+#include "../Gun.h"
 #include "UpgradeMachine.generated.h"
 
 #define UPGRADES 5
@@ -17,6 +18,10 @@ class PROJECT_BYTES_API AUpgradeMachine : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AUpgradeMachine();
+
+	// Initialize the player and Gun pointers with the real world ones
+	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
+	void Initialize(AExterminatorMannequin *PlayerReference);
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,19 +57,21 @@ public:
 	*/
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
-	bool AmmoCapacityIncrease(AExterminatorMannequin *PlayerReference);
+	bool AmmoCapacityIncrease();
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
-	bool DamageIncrease(AExterminatorMannequin *PlayerReference);
+	bool DamageIncrease();
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
-	bool HealthCapacityIncrease(AExterminatorMannequin *PlayerReference);
+	bool HealthCapacityIncrease();
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
-	bool RefillAmmo(AExterminatorMannequin *PlayerReference);
+	bool RefillAmmo();
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
-	bool RefillHealth(AExterminatorMannequin *PlayerReference);
-
-
+	bool RefillHealth();
+	
+private:
+	AExterminatorMannequin * PlayerReference;
+	AGun *ShotgunReference;
 };

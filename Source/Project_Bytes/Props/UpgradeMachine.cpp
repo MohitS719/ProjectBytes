@@ -10,6 +10,12 @@ AUpgradeMachine::AUpgradeMachine()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
+void AUpgradeMachine::Initialize(AExterminatorMannequin * PlayerReference)
+{
+	this->PlayerReference = PlayerReference;
+	this->ShotgunReference = PlayerReference->Shotgun;
+}
+
 // Called when the game starts or when spawned
 void AUpgradeMachine::BeginPlay()
 {
@@ -24,12 +30,19 @@ void AUpgradeMachine::Tick(float DeltaTime)
 }
 
 
-bool AUpgradeMachine::AmmoCapacityIncrease(AExterminatorMannequin *PlayerReference)
+bool AUpgradeMachine::AmmoCapacityIncrease()
 {
+	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+
+		return false;
+	}
+
 	if (PlayerReference->Tokens >= AmmoCapacityPrice)
 	{
-		PlayerReference->MaxAmmo += 10;						// Performing Upgrade
-
+		ShotgunReference->MaxAmmo += 10;					// Performing Upgrade
+		
 		PlayerReference->Tokens -= AmmoCapacityPrice;		// Deduct Price
 
 		AmmoCapacityPrice += 10;
@@ -40,11 +53,18 @@ bool AUpgradeMachine::AmmoCapacityIncrease(AExterminatorMannequin *PlayerReferen
 	return false;											// Purchase Failed
 }
 
-bool AUpgradeMachine::DamageIncrease(AExterminatorMannequin *PlayerReference)
+bool AUpgradeMachine::DamageIncrease()
 {
+	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+
+			return false;
+	}
+
 	if (PlayerReference->Tokens >= DamageIncreasePrice)
 	{
-		PlayerReference->WeaponDamage += 5;					// Performing Upgrade
+		ShotgunReference->WeaponDamage += 5;				// Performing Upgrade
 
 		PlayerReference->Tokens -= DamageIncreasePrice;		// Deduct Price
 
@@ -56,8 +76,15 @@ bool AUpgradeMachine::DamageIncrease(AExterminatorMannequin *PlayerReference)
 	return false;											// Purchase Failed
 }
 
-bool AUpgradeMachine::HealthCapacityIncrease(AExterminatorMannequin *PlayerReference)
+bool AUpgradeMachine::HealthCapacityIncrease()
 {
+	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+
+			return false;
+	}
+
 	if (PlayerReference->Tokens >= HealthCapacityPrice)
 	{
 		PlayerReference->MaxHealth += 10.0;					// Performing Upgrade
@@ -72,8 +99,15 @@ bool AUpgradeMachine::HealthCapacityIncrease(AExterminatorMannequin *PlayerRefer
 	return false;											// Purchase Failed
 }
 
-bool AUpgradeMachine::RefillAmmo(AExterminatorMannequin *PlayerReference)
+bool AUpgradeMachine::RefillAmmo()
 {
+	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+
+			return false;
+	}
+
 	if (PlayerReference->Tokens >= RefillAmmoPrice && PlayerReference->Health < PlayerReference->MaxHealth)
 	{
 		PlayerReference->Health = PlayerReference->MaxHealth;	// Performing Upgrade
@@ -88,11 +122,18 @@ bool AUpgradeMachine::RefillAmmo(AExterminatorMannequin *PlayerReference)
 	return false;												// Purchase Failed
 }
 
-bool AUpgradeMachine::RefillHealth(AExterminatorMannequin *PlayerReference)
+bool AUpgradeMachine::RefillHealth()
 {
-	if (PlayerReference->Tokens >= RefillHealthPrice && PlayerReference->Ammo < PlayerReference->MaxAmmo)
+	if (PlayerReference == nullptr || ShotgunReference == nullptr)
 	{
-		PlayerReference->Ammo = PlayerReference->MaxAmmo;	// Performing Upgrade
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+
+			return false;
+	}
+
+	if (PlayerReference->Tokens >= RefillHealthPrice && ShotgunReference->Ammo < ShotgunReference->MaxAmmo)
+	{
+		PlayerReference->Shotgun->Ammo = PlayerReference->Shotgun->MaxAmmo;	// Performing Upgrade
 
 		PlayerReference->Tokens -= RefillHealthPrice;		// Deduct Price
 

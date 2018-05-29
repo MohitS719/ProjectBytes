@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 
 
+
 // Sets default values
 AGun::AGun()
 {
@@ -17,9 +18,11 @@ AGun::AGun()
 	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
 	FP_Gun->bCastDynamicShadow = false;
 	FP_Gun->CastShadow = false;
+
 	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
 	FP_Gun->SetupAttachment(RootComponent);
 
+	// Setup muzzle location
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	FP_MuzzleLocation->SetupAttachment(FP_Gun);
 	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
@@ -77,4 +80,31 @@ void AGun::OnFire()
 	{
 		AnimInstance3P->Montage_Play(FireAnimation3P, 1.f);
 	}
+
+	// Decrease Ammo
+	--Ammo;
+}
+
+
+bool AGun::IncreaseAmmo(int Amount)
+{
+	if (Ammo < MaxAmmo)		// Checking whether ammo can be taken
+	{
+		Ammo += Amount;		// Ammo Taken
+
+		if (Ammo > MaxAmmo)	// Boundary check
+		{	
+			Ammo = MaxAmmo;
+		}
+
+		bDisplayAmmoFull = false;	// No need to display full ammo
+
+		return true;		// Pickup successfull
+	}
+	else
+	{
+		bDisplayAmmoFull = true;	// Show player ammo full
+	}
+
+	return false;			// Pick up failed
 }

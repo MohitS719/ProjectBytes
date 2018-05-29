@@ -44,22 +44,22 @@ void AExterminatorMannequin::BeginPlay()
 	Super::BeginPlay();
 	if (GunBlueprint == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("GIN BLUEPRINT MISSING!"))
+		UE_LOG(LogTemp, Warning, TEXT("GUN BLUEPRINT MISSING!"))
 		return;
 	}
 
-	Gun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
+	Shotgun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
 	if (IsPlayerControlled())
 	{
-		Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		Shotgun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 	else
 	{
-		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		Shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 
-	Gun->AnimInstance1P = Mesh1P->GetAnimInstance();
-	Gun->AnimInstance3P = GetMesh()->GetAnimInstance();
+	Shotgun->AnimInstance1P = Mesh1P->GetAnimInstance();
+	Shotgun->AnimInstance3P = GetMesh()->GetAnimInstance();
 
 	if (InputComponent != nullptr)
 	{
@@ -182,18 +182,17 @@ void AExterminatorMannequin::UnPossessed()
 {
 	Super::UnPossessed();
 
-	if (Gun != NULL)
+	if (Shotgun != NULL)
 	{
-		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		Shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 }
 
 void AExterminatorMannequin::PullTrigger()
 {
-	if (Ammo > 0)
+	if (Shotgun->Ammo > 0)	// Check If Gun Has Enough Ammo to fire
 	{
-		Gun->OnFire();
-		Ammo--;
+		Shotgun->OnFire();	// Tell Gun To Fire
 	}
 
 	return;

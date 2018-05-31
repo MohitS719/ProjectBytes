@@ -56,22 +56,25 @@ public:
 		Upgrade Functions
 	*/
 
-	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
+	UFUNCTION(BlueprintCallable, Category = "Upgrade Purchase Function")
 	bool AmmoCapacityIncrease();
 
-	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
+	UFUNCTION(BlueprintCallable, Category = "Upgrade Purchase Function")
 	bool DamageIncrease();
 
-	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
+	UFUNCTION(BlueprintCallable, Category = "Upgrade Purchase Function")
 	bool HealthCapacityIncrease();
 
-	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
+	UFUNCTION(BlueprintCallable, Category = "Upgrade Purchase Function")
 	bool RefillAmmo();
 
-	UFUNCTION(BlueprintCallable, Category = "Upgrade Machine")
+	UFUNCTION(BlueprintCallable, Category = "Upgrade Purchase Function")
 	bool RefillHealth();
 	
 private:
+	// Reference of buyer
 	AExterminatorMannequin * PlayerReference;
+
+	// Reference of player's weapon
 	AGun *ShotgunReference;
 };

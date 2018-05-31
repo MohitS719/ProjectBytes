@@ -2,7 +2,6 @@
 
 #include "UpgradeMachine.h"
 
-
 // Sets default values
 AUpgradeMachine::AUpgradeMachine()
 {
@@ -12,7 +11,10 @@ AUpgradeMachine::AUpgradeMachine()
 
 void AUpgradeMachine::Initialize(AExterminatorMannequin * PlayerReference)
 {
+	// Getting buyer reference
 	this->PlayerReference = PlayerReference;
+
+	// Getting buyers weapon reference
 	this->ShotgunReference = PlayerReference->Shotgun;
 }
 
@@ -29,119 +31,165 @@ void AUpgradeMachine::Tick(float DeltaTime)
 
 }
 
+/*
+	Upgrade Machine Purchase mechanisms.
+	Include 2 step verification.
+	Step 1. Check for player reference and Weapon reference. If NOT NULL Proceed.
+	Step 2. Check Purchase criteria. Meaning, if player has enough tokens.
+*/
 
 bool AUpgradeMachine::AmmoCapacityIncrease()
 {
-	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	// Mandatory Null pointer check
+	if (PlayerReference && ShotgunReference)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-
-		return false;
-	}
-
-	if (PlayerReference->Tokens >= AmmoCapacityPrice)
-	{
-		ShotgunReference->MaxAmmo += 10;					// Performing Upgrade
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= AmmoCapacityPrice)
+		{
+			// Performing Upgrade
+			ShotgunReference->MaxAmmo += 10;					
 		
-		PlayerReference->Tokens -= AmmoCapacityPrice;		// Deduct Price
+			// Deduct Price
+			PlayerReference->Tokens -= AmmoCapacityPrice;		
 
-		AmmoCapacityPrice += 10;
+			// Increasing Price of Upgrade
+			AmmoCapacityPrice += 10;
 
-		return true;										// Purchase Successful
+			// Purchase Successful
+			return true;										
+		}
+	}
+	else
+	{
+		// Show error message
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
 	}
 
-	return false;											// Purchase Failed
+	// Purchase Failed
+	return false;											
 }
 
 bool AUpgradeMachine::DamageIncrease()
 {
-	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	// Mandatory Null pointer check
+	if (PlayerReference && ShotgunReference)
 	{
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= DamageIncreasePrice)
+		{
+			// Performing Upgrade
+			ShotgunReference->WeaponDamage += 5;				
+
+			// Deduct Price
+			PlayerReference->Tokens -= DamageIncreasePrice;		
+
+			// Increasing Price of Upgrade
+			DamageIncreasePrice += 10;
+
+			// Purchase Successful
+			return true;										
+		}
+	}
+	else
+	{
+		// Show error message
 		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-
-			return false;
 	}
 
-	if (PlayerReference->Tokens >= DamageIncreasePrice)
-	{
-		ShotgunReference->WeaponDamage += 5;				// Performing Upgrade
-
-		PlayerReference->Tokens -= DamageIncreasePrice;		// Deduct Price
-
-		DamageIncreasePrice += 10;
-
-		return true;										// Purchase Successful
-	}
-
-	return false;											// Purchase Failed
+	// Purchase Failed
+	return false;											
 }
 
 bool AUpgradeMachine::HealthCapacityIncrease()
 {
-	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	// Mandatory Null pointer check
+	if (PlayerReference)
 	{
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= HealthCapacityPrice)
+		{
+			// Performing Upgrade
+			PlayerReference->MaxHealth += 10.0;					
+
+			// Deduct Price
+			PlayerReference->Tokens -= HealthCapacityPrice;		
+
+			// Increasing Price of Upgrade
+			HealthCapacityPrice += 10;
+
+			// Purchase Successful
+			return true;										
+		}
+	}
+	else
+	{
+		// Show error message
 		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-
-			return false;
 	}
 
-	if (PlayerReference->Tokens >= HealthCapacityPrice)
-	{
-		PlayerReference->MaxHealth += 10.0;					// Performing Upgrade
-
-		PlayerReference->Tokens -= HealthCapacityPrice;		// Deduct Price
-
-		HealthCapacityPrice += 10;
-
-		return true;										// Purchase Successful
-	}
-
-	return false;											// Purchase Failed
+	// Purchase Failed
+	return false;											
 }
 
 bool AUpgradeMachine::RefillAmmo()
 {
-	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	// Mandatory Null pointer check
+	if (PlayerReference && ShotgunReference)
 	{
+		// Purchase criteria check
+		if ( (PlayerReference->Tokens >= RefillAmmoPrice) && (ShotgunReference->Ammo < ShotgunReference->MaxAmmo) )
+		{
+			// Performing Upgrade
+			PlayerReference->Shotgun->Ammo = PlayerReference->Shotgun->MaxAmmo;	
+
+			// Deduct Price
+			PlayerReference->Tokens -= RefillAmmoPrice;				
+
+			// Increasing Price of Upgrade
+			++RefillAmmoPrice;
+
+			// Purchase Successful
+			return true;											
+		}
+	}
+	else
+	{
+		// Show error message
 		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-
-			return false;
 	}
-
-	if (PlayerReference->Tokens >= RefillAmmoPrice && PlayerReference->Health < PlayerReference->MaxHealth)
-	{
-		PlayerReference->Health = PlayerReference->MaxHealth;	// Performing Upgrade
-
-		PlayerReference->Tokens -= RefillAmmoPrice;				// Deduct Price
-
-		++RefillAmmoPrice;
-
-		return true;											// Purchase Successful
-	}
-
-	return false;												// Purchase Failed
+	
+	// Purchase Failed
+	return false;
 }
 
 bool AUpgradeMachine::RefillHealth()
 {
-	if (PlayerReference == nullptr || ShotgunReference == nullptr)
+	// Mandatory Null pointer check
+	if (PlayerReference)
 	{
+		// Purchase criteria check
+		if ( (PlayerReference->Tokens >= RefillHealthPrice) && (PlayerReference->Health < PlayerReference->MaxHealth) )
+		{
+			// Performing Upgrade
+			PlayerReference->Health = PlayerReference->MaxHealth;			
+
+			// Deduct Price
+			PlayerReference->Tokens -= RefillHealthPrice;		
+
+			// Increasing Price of Upgrade
+			++RefillHealthPrice;
+
+			// Purchase Successful
+			return true;										
+		}
+	}
+	else
+	{
+		// Show error message
 		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-
-			return false;
 	}
 
-	if (PlayerReference->Tokens >= RefillHealthPrice && ShotgunReference->Ammo < ShotgunReference->MaxAmmo)
-	{
-		PlayerReference->Shotgun->Ammo = PlayerReference->Shotgun->MaxAmmo;	// Performing Upgrade
-
-		PlayerReference->Tokens -= RefillHealthPrice;		// Deduct Price
-
-		++RefillHealthPrice;
-
-		return true;										// Purchase Successful
-	}
-
-	return false;											// Purchase Failed
+	// Purchase Failed
+	return false;											
 }
 

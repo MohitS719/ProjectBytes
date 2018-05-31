@@ -20,7 +20,24 @@ class PROJECT_BYTES_API AGun : public AActor
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	class USceneComponent* FP_MuzzleLocation;
 	
-public:	
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+
+	// Sets default values for this actor's properties
+	AGun();
+
+
+	/*
+		Weapon Specific properties
+	*/
+
 	// Ammo of gun
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
 	int Ammo = 100;
@@ -45,15 +62,19 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
 	bool bDisplayAmmoFull = false;
 
+	UPROPERTY()
+	class UAnimInstance* AnimInstance1P;
+
+	UPROPERTY()
+	class UAnimInstance* AnimInstance3P;
+
+	/*
+		Weapon specific functions
+	*/
+
 	// Function to Increase Ammo
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	bool IncreaseAmmo(int Amount);
-
-
-public:
-
-	// Sets default values for this actor's properties
-	AGun();
 
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
@@ -70,27 +91,12 @@ public:
 	/** AnimMontages to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation1P;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation3P;
-
-	UPROPERTY()
-	class UAnimInstance* AnimInstance1P;
-
-	UPROPERTY()
-	class UAnimInstance* AnimInstance3P;
 
 	/** Fires a projectile. */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnFire();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	
 	
 };

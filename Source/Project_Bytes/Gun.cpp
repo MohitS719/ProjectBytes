@@ -82,9 +82,33 @@ void AGun::OnFire()
 	}
 
 	// Decrease Ammo
-	--Ammo;
+	--ClipSize;
 }
 
+bool AGun::ReloadWeapon()
+{
+	// Is reload necessary?
+	if (ClipSize != MaxClipSize)
+	{
+		// Deducting from total ammo
+		Ammo -= (MaxClipSize-ClipSize);
+		// Refilling clip
+		ClipSize = MaxClipSize;
+
+		// Boundary Checking
+		if (Ammo <= 0)
+		{
+			ClipSize += Ammo;
+			Ammo = 0;
+		}
+
+		// Reload Successful
+		return true;
+	}
+
+	// Reload Failed
+	return false;
+}
 
 bool AGun::IncreaseAmmo(int Amount)
 {

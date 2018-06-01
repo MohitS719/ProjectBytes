@@ -120,6 +120,26 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int MaxStamina = 10;
 
+	/*
+		For animation purposes
+	*/
+
+	// Player Sprinting
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	bool bSprinting = false;
+
+	// Player Aiming
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	bool bAiming = false;
+
+	// Player Reloading
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	bool bReloading = false;
+
+	// Increase Player Token
+	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	void Reload();
+
 private:
 	// Regenerate stamina
 	UFUNCTION()

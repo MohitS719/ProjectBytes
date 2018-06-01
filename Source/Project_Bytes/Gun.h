@@ -48,11 +48,11 @@ public:
 
 	// Clip Size
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	int ClipSize = 100;
+	int ClipSize = 30;
 
 	// Max Clip Size
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
-	int MaxClipSize = 100;
+	int MaxClipSize = 30;
 
 	// Damage Amount
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
@@ -98,5 +98,7 @@ public:
 	/** Fires a projectile. */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnFire();
+
+	bool ReloadWeapon();
 	
 };

@@ -7,7 +7,7 @@
 AMonsterSpawner::AMonsterSpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -28,11 +28,14 @@ void AMonsterSpawner::Tick(float DeltaTime)
 
 void AMonsterSpawner::DecreaseCountDownTimer()
 {
-	if (CountDownTimer > 0)			// Count down greater than zzero
+	// Count down greater than zero
+	if (CountDownTimer > 0)			
 	{
-		--CountDownTimer;			// Decrease timer by 1
+		// Decrease timer by 1
+		--CountDownTimer;			
 	}
-	else if (GetWorldTimerManager().IsTimerActive(CountDownTimerHandler))	// If timer is equal to zero check if timerhandler is still going
+	// If timer is equal to zero check if timerhandler is still going
+	else if (GetWorldTimerManager().IsTimerActive(CountDownTimerHandler))	
 	{
 		// Stop calling count down timer
 		GetWorldTimerManager().ClearTimer(CountDownTimerHandler);
@@ -40,6 +43,7 @@ void AMonsterSpawner::DecreaseCountDownTimer()
 		// Reset
 		TimerOn = false;
 
+		// First time called?
 		if (GetReady)
 		{
 			GetReady = false;
@@ -55,11 +59,16 @@ void AMonsterSpawner::DecreaseCountDownTimer()
 
 void AMonsterSpawner::CallTimer()
 {
+	// Setting indicator on
 	TimerOn = true;
 
+	// First time?
 	if (!GetReady)
 	{
+		// Not first time then Wave cleared timer should be displayed
 		WaveCleared = true;
+
+		// Setting timer length
 		CountDownTimer = 30;
 	}
 

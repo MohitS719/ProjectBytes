@@ -99,6 +99,9 @@ void AExterminatorMannequin::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	// Sprinting
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AExterminatorMannequin::GoToSprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AExterminatorMannequin::GoToWalk);
+
+	// Reloading
+	PlayerInputComponent->BindAction("Reload", IE_Released, this, &AExterminatorMannequin::Reload);
 }
 
 void AExterminatorMannequin::MoveForward(float Value)
@@ -133,6 +136,8 @@ void AExterminatorMannequin::GoToSprint()
 		// Set character to sprint
 		CharacterMovement->MaxWalkSpeed = SprintSpeed;
 
+		bSprinting = true;
+
 		// Depleting Stamina by 1 per second
 		GetWorldTimerManager().SetTimer(StaminaDepleteTimerHandle, this, &AExterminatorMannequin::DepleteStamina, 1.0f, true);
 	}
@@ -155,6 +160,8 @@ void AExterminatorMannequin::GoToWalk()
 
 	// Set character to normal walking speed
 	CharacterMovement->MaxWalkSpeed = WalkSpeed;
+
+	bSprinting = false;
 
 	// Is Stamina not Full?
 	if (Stamina < MaxStamina)
@@ -192,7 +199,17 @@ void AExterminatorMannequin::PullTrigger()
 {
 	if (Shotgun->Ammo > 0)	// Check If Gun Has Enough Ammo to fire
 	{
-		Shotgun->OnFire();	// Tell Gun To Fire
+		// Does the clip have enough bullets?
+		if (Shotgun->ClipSize <= 0)
+		{
+			// Call Reload
+			Reload();
+		}
+		else
+		{
+			// Yes. Shoot.
+			Shotgun->OnFire();	// Tell Gun To Fire
+		}
 	}
 
 	return;
@@ -238,6 +255,21 @@ bool AExterminatorMannequin::TakeDamage(float Amount)
 	}
 
 	return bIsDead;
+}
+
+void AExterminatorMannequin::Reload()
+{
+	// Checking if there is ammo to reload
+	if (Shotgun->Ammo > 0)
+	{
+		// No. Relaod
+		bReloading = true;
+
+		// Call shotgun reload function
+		bReloading = !(Shotgun->ReloadWeapon());
+	}
+
+	return;
 }
 
 void AExterminatorMannequin::RegenerateStamina()

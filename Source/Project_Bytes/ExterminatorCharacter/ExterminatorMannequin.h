@@ -133,12 +133,15 @@ public:
 	bool bAiming = false;
 
 	// Player Reloading
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
 	bool bReloading = false;
 
-	// Increase Player Token
+	// Reload Weapon call
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	void Reload();
+
+	// Set bReload State
+	void SetReload();
 
 private:
 	// Regenerate stamina

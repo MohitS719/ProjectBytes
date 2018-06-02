@@ -101,7 +101,7 @@ void AExterminatorMannequin::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AExterminatorMannequin::GoToWalk);
 
 	// Reloading
-	PlayerInputComponent->BindAction("Reload", IE_Released, this, &AExterminatorMannequin::Reload);
+	PlayerInputComponent->BindAction("Reload", IE_Released, this, &AExterminatorMannequin::SetReload);
 }
 
 void AExterminatorMannequin::MoveForward(float Value)
@@ -259,14 +259,19 @@ bool AExterminatorMannequin::TakeDamage(float Amount)
 
 void AExterminatorMannequin::Reload()
 {
-	// Checking if there is ammo to reload
-	if (Shotgun->Ammo > 0)
-	{
-		// No. Relaod
-		bReloading = true;
+	
+	// Call shotgun reload function
+	bReloading = !(Shotgun->ReloadWeapon());
 
-		// Call shotgun reload function
-		bReloading = !(Shotgun->ReloadWeapon());
+	return;
+}
+
+void AExterminatorMannequin::SetReload()
+{
+	// Checking if there is ammo to reload and clip is empty
+	if ( (Shotgun->Ammo > 0) && (Shotgun->ClipSize < Shotgun->MaxClipSize) )
+	{
+		bReloading = true;
 	}
 
 	return;

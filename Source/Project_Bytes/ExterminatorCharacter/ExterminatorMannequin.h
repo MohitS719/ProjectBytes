@@ -10,39 +10,60 @@
 UCLASS()
 class PROJECT_BYTES_API AExterminatorMannequin : public ACharacter
 {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+													/************************************************************************
+													*						FUNDAMENTAL LOGIC START							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
-	AExterminatorMannequin();
+	
+	AExterminatorMannequin();			// Sets default values for this character's properties
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	
+	virtual void BeginPlay() override;	// Called when the game starts or when spawned
 
-	/** Handles moving forward/backward */
-	void MoveForward(float Val);
+public:
 
-	/** Handles stafing movement, left and right */
-	void MoveRight(float Val);
+	virtual void Tick(float DeltaTime) override;															// Called every frame
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;			// Called to bind functionality to input
+	virtual void UnPossessed() override;
 
-	/** Sprint */
-	void GoToSprint();
 
-	/** Walk */
-	void GoToWalk();
+private:
+	
+	// Pawn mesh 1st person view (arms, seen only by self
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	class USkeletalMeshComponent* Mesh1P;
 
-	/**
-	* Called via input to turn at a given rate.
-	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	*/
-	void TurnAtRate(float Rate);
+	// First person camera
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FirstPersonCameraComponent;
 
-	/**
-	* Called via input to turn look up/down at a given rate.
-	* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	*/
-	void LookUpAtRate(float Rate);
+	class UCharacterMovementComponent *CharacterMovement;		// Character Movement Component
+
+													/************************************************************************
+													*						FUNDAMENTAL LOGIC END							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+													/************************************************************************
+													*					MOVEMENT RELATED LOGIC START						*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+
+protected:
+	
+	void MoveForward(float Val);				/** Handles moving forward/backward */
+	void MoveRight(float Val);					/** Handles stafing movement, left and right */
+	void TurnAtRate(float Rate);				/** Called via input to turn at a given rate. @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate */
+	void LookUpAtRate(float Rate);				/** Called via input to turn look up/down at a given rate. @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate */
 
 public:
 
@@ -54,31 +75,35 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+protected:
+
+	void GoToSprint();			/** Sprint */
+	void GoToWalk();			/** Walk */
+
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
+	// Is player sprinting?
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	bool bSprinting = false;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void UnPossessed() override;
-
-	/*
-		Weapon Sppecific Variables and Functions
-		Contains Ammo, MaxAmmo, Clipsize, MaxClipSize, Damage
-	*/
-
-	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	TSubclassOf<class AGun> GunBlueprint;
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon Details")
-	void PullTrigger();
+private:
+	
+	float WalkSpeed = 500.0f, SprintSpeed = 1000.f;		/** Different movement speeds */
 
 
-	/*
-		Character Detail Specific Variables And Functions
-		Contains Health, MaxHealth, Stamina, MaxStamina
-	*/
+													/************************************************************************
+													*					MOVEMENT RELATED LOGIC END							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+													/************************************************************************
+													*					PROPERTY RELATED LOGIC START						*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+public:
 
 	// Player Health
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
@@ -107,7 +132,7 @@ public:
 	// Player Dead?
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	bool bIsDead = false;
-	
+
 	// Player Death Called?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
 	bool bDeathEventCalled = false;
@@ -119,29 +144,6 @@ public:
 	// Player Max Stamina
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int MaxStamina = 10;
-
-	/*
-		For animation purposes
-	*/
-
-	// Player Sprinting
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
-	bool bSprinting = false;
-
-	// Player Aiming
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
-	bool bAiming = false;
-
-	// Player Reloading
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
-	bool bReloading = false;
-
-	// Reload Weapon call
-	UFUNCTION(BlueprintCallable, Category = "Character Details")
-	void Reload();
-
-	// Set bReload State
-	void SetReload();
 
 private:
 	// Regenerate stamina
@@ -167,23 +169,81 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	void IncreaseTokens(int IncreaseAmount);
 
-	// Attaching Gun BP
+													/************************************************************************
+													*					PROPERTY RELATED LOGIC END							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+													/************************************************************************
+													*					WEAPON RELATED LOGIC START							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+
+public:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	TSubclassOf<class AGun> ShotGunBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	TSubclassOf<class AGun> PistolBlueprint;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon Details")
+	void PullTrigger();
+
+
+	// Player Aiming
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	bool bAiming = false;
+
+	// Player Reloading
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
+	bool bReloading = false;
+
+	// Reload Weapon call
+	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	void Reload();
+
+	// Set bReload State
+	void SetReload();
+
+	// Attaching Shotgun BP
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	AGun *Shotgun;
 
-private:
-	// Pawn mesh 1st person view (arms, seen only by self
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* Mesh1P;
-
-	// First person camera
+	// Attaching pistol BP
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FirstPersonCameraComponent;
+	AGun *Pistol;
 
-	// Character Movement Component
-	class UCharacterMovementComponent *CharacterMovement;
+	// Attaching pistol BP
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	AGun *CurrentWeapon;
 
-	// Walk speed
-	float WalkSpeed = 500.0f, SprintSpeed = 1000.f;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon Swapping")
+	void ChangeWeapon();
+
+	void ChangeWeaponInitiate();
+	void AttachWeaponToGripPoint();
+
+	// Active weapon
+	bool IsPistol = false;
+	bool IsShotgun = true;
+
+	// Bool for swapping
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Rotation Details")
+	bool Swapping = false;
+
+	// Rotating weapon swapped
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Rotation Details")
+	FRotator RotateWeaponSwapped = FRotator(0, 0, 90);
+
+													/************************************************************************
+													*					WEAPON RELATED LOGIC END							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 };

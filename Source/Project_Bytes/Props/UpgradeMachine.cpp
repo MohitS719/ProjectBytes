@@ -16,6 +16,7 @@ void AUpgradeMachine::Initialize(AExterminatorMannequin * PlayerReference)
 
 	// Getting buyers weapon reference
 	this->ShotgunReference = PlayerReference->Shotgun;
+	this->PistolReference = PlayerReference->Pistol;
 }
 
 // Called when the game starts or when spawned

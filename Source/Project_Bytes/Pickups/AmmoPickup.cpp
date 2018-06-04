@@ -41,7 +41,7 @@ void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase
 		PlayerReference = Player;
 
 		// Try To Increase Ammo
-		if (PlayerReference->Shotgun->IncreaseAmmo(10))	
+		if (PlayerReference->CurrentWeapon->IncreaseAmmo(10))	
 		{
 			// Successful
 
@@ -59,7 +59,7 @@ void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase
 			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
 
 			// Inventory full
-			PlayerReference->Shotgun->bDisplayAmmoFull = true;
+			PlayerReference->CurrentWeapon->bDisplayAmmoFull = true;
 
 			// Display indicator for sometime
 			GetWorldTimerManager().SetTimer(AmmoFullTimerHandle, this, &AAmmoPickup::TurnOffIndicator, IndicatorLifeSpan, true);
@@ -80,7 +80,7 @@ void AAmmoPickup::TurnOffIndicator()
 	if (GetWorldTimerManager().IsTimerActive(AmmoFullTimerHandle))
 	{
 		// Turn of indicator
-		PlayerReference->Shotgun->bDisplayAmmoFull = false;
+		PlayerReference->CurrentWeapon->bDisplayAmmoFull = false;
 
 		// Clear timer 
 		GetWorldTimerManager().ClearTimer(AmmoFullTimerHandle);

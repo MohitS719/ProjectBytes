@@ -75,6 +75,9 @@ private:
 	// Reference of buyer
 	AExterminatorMannequin * PlayerReference;
 
-	// Reference of player's weapon
+	// Reference of player's shotgun
 	AGun *ShotgunReference;
+
+	// Reference for player's pistol
+	AGun *PistolReference;
 };

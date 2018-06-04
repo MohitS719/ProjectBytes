@@ -11,6 +11,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Public/TimerManager.h"
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+														/************************************************************************
+														*						FUNDAMENTAL LOGIC START							*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
+
 // Sets default values
 AExterminatorMannequin::AExterminatorMannequin()
 {
@@ -18,7 +25,7 @@ AExterminatorMannequin::AExterminatorMannequin()
 	CharacterMovement = GetCharacterMovement();
 	CharacterMovement->MaxWalkSpeed = WalkSpeed;
 
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Create a CameraComponent	
@@ -42,25 +49,45 @@ AExterminatorMannequin::AExterminatorMannequin()
 void AExterminatorMannequin::BeginPlay()
 {
 	Super::BeginPlay();
-	if (GunBlueprint == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GUN BLUEPRINT MISSING!"))
-		return;
-	}
 
-	Shotgun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
-	if (IsPlayerControlled())
+	// Spawning the shotgun
+	if (ShotGunBlueprint == nullptr)
 	{
-		Shotgun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		UE_LOG(LogTemp, Warning, TEXT("SHOTGUN BLUEPRINT MISSING!"))
+			return;
 	}
 	else
 	{
-		Shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		Shotgun = GetWorld()->SpawnActor<AGun>(ShotGunBlueprint);
 	}
 
+	// Spawning the pistol
+	if (PistolBlueprint == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PISTOL BLUEPRINT MISSING!"))
+			return;
+	}
+	else
+	{
+		Pistol = GetWorld()->SpawnActor<AGun>(PistolBlueprint);
+	}
+
+	// Setting Current weapon
+	CurrentWeapon = Shotgun;
+
+	// Ataching weapon to hand socket
+	AttachWeaponToGripPoint();
+	Pistol->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("shotgun_clip"));
+	Pistol->SetActorRelativeRotation(RotateWeaponSwapped);
+
+	// Attaching weapon animations
 	Shotgun->AnimInstance1P = Mesh1P->GetAnimInstance();
 	Shotgun->AnimInstance3P = GetMesh()->GetAnimInstance();
 
+	Pistol->AnimInstance1P = Mesh1P->GetAnimInstance();
+	Pistol->AnimInstance3P = GetMesh()->GetAnimInstance();
+
+	// Setting fire input
 	if (InputComponent != nullptr)
 	{
 		InputComponent->BindAction("Fire", IE_Pressed, this, &AExterminatorMannequin::PullTrigger);
@@ -101,8 +128,38 @@ void AExterminatorMannequin::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AExterminatorMannequin::GoToWalk);
 
 	// Reloading
-	PlayerInputComponent->BindAction("Reload", IE_Released, this, &AExterminatorMannequin::SetReload);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AExterminatorMannequin::SetReload);
+
+	// Weapon Switching
+	PlayerInputComponent->BindAction("SwitchUp", IE_Pressed, this, &AExterminatorMannequin::ChangeWeaponInitiate);
+	PlayerInputComponent->BindAction("SwitchDown", IE_Pressed, this, &AExterminatorMannequin::ChangeWeaponInitiate);
 }
+
+// On Death event
+void AExterminatorMannequin::UnPossessed()
+{
+	Super::UnPossessed();
+
+	if (Shotgun != NULL)
+	{
+		Shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	}
+}
+
+														/************************************************************************
+														*						FUNDAMENTAL LOGIC END							*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+														/************************************************************************
+														*					MOVEMENT RELATED LOGIC START						*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
 
 void AExterminatorMannequin::MoveForward(float Value)
 {
@@ -120,6 +177,18 @@ void AExterminatorMannequin::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
 	}
+}
+
+void AExterminatorMannequin::TurnAtRate(float Rate)
+{
+	// calculate delta for this frame from the rate information
+	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AExterminatorMannequin::LookUpAtRate(float Rate)
+{
+	// calculate delta for this frame from the rate information
+	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AExterminatorMannequin::GoToSprint()
@@ -173,47 +242,19 @@ void AExterminatorMannequin::GoToWalk()
 	return;
 }
 
-void AExterminatorMannequin::TurnAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
+														/************************************************************************
+														*					MOVEMENT RELATED LOGIC END							*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void AExterminatorMannequin::LookUpAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
-}
 
-void AExterminatorMannequin::UnPossessed()
-{
-	Super::UnPossessed();
 
-	if (Shotgun != NULL)
-	{
-		Shotgun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-	}
-}
-
-void AExterminatorMannequin::PullTrigger()
-{
-	if (Shotgun->Ammo > 0)	// Check If Gun Has Enough Ammo to fire
-	{
-		// Does the clip have enough bullets?
-		if (Shotgun->ClipSize <= 0)
-		{
-			// Call Reload
-			Reload();
-		}
-		else
-		{
-			// Yes. Shoot.
-			Shotgun->OnFire();	// Tell Gun To Fire
-		}
-	}
-
-	return;
-}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+														/************************************************************************
+														*					PROPERTY RELATED LOGIC START						*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
 
 bool AExterminatorMannequin::Heal(float Amount)
 {
@@ -257,26 +298,6 @@ bool AExterminatorMannequin::TakeDamage(float Amount)
 	return bIsDead;
 }
 
-void AExterminatorMannequin::Reload()
-{
-	
-	// Call shotgun reload function
-	bReloading = !(Shotgun->ReloadWeapon());
-
-	return;
-}
-
-void AExterminatorMannequin::SetReload()
-{
-	// Checking if there is ammo to reload and clip is empty
-	if ( (Shotgun->Ammo > 0) && (Shotgun->ClipSize < Shotgun->MaxClipSize) )
-	{
-		bReloading = true;
-	}
-
-	return;
-}
-
 void AExterminatorMannequin::RegenerateStamina()
 {
 	if (Stamina < MaxStamina)
@@ -316,3 +337,126 @@ void AExterminatorMannequin::IncreaseTokens(int IncreaseAmount)
 
 	return;
 }
+
+														/************************************************************************
+														*					PROPERTY RELATED LOGIC END							*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+														/************************************************************************
+														*					WEAPON RELATED LOGIC START							*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
+
+void AExterminatorMannequin::PullTrigger()
+{
+	if (CurrentWeapon->Ammo > 0)	// Check If Gun Has Enough Ammo to fire
+	{
+		// Does the clip have enough bullets?
+		if (CurrentWeapon->ClipSize <= 0)
+		{
+			// Call Reload
+			Reload();
+		}
+		else
+		{
+			// Yes. Shoot.
+			CurrentWeapon->OnFire();	// Tell Gun To Fire
+		}
+	}
+
+	return;
+}
+
+void AExterminatorMannequin::Reload()
+{
+
+	// Call weapon reload function
+	bReloading = !(CurrentWeapon->ReloadWeapon());
+
+	return;
+}
+
+void AExterminatorMannequin::SetReload()
+{
+	// Checking if there is ammo to reload and clip is empty
+	if ((CurrentWeapon->Ammo > 0) && (CurrentWeapon->ClipSize < CurrentWeapon->MaxClipSize))
+	{
+		bReloading = true;
+	}
+
+	return;
+}
+
+void AExterminatorMannequin::ChangeWeaponInitiate()
+{
+	Swapping = true;
+
+	// Is Shotgun the current weapon?
+	if (IsShotgun)
+	{
+		// Then swap the shotgun for the pistol
+		IsShotgun = false;
+		IsPistol = true;
+	}
+	else
+	{
+		// Otherwise swap the pistol for the shotgun
+		IsShotgun = true;
+		IsPistol = false;
+	}
+
+	return;
+}
+
+void AExterminatorMannequin::ChangeWeapon()
+{
+	CurrentWeapon->DetachRootComponentFromParent();
+	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("shotgun_clip"));
+	CurrentWeapon->SetActorRelativeRotation(RotateWeaponSwapped);
+
+	// Checking to see which weapon the current weapon is
+	if (IsPistol)
+	{
+		CurrentWeapon = Pistol;
+
+		UE_LOG(LogTemp, Warning, TEXT("PISTOL"))
+	}
+	else
+	{
+		CurrentWeapon = Shotgun;
+
+		UE_LOG(LogTemp, Warning, TEXT("SHOTGUN"))
+	}
+
+	AttachWeaponToGripPoint();
+
+	return;
+}
+
+void AExterminatorMannequin::AttachWeaponToGripPoint()
+{
+	// Ataching weapon to socket
+	if (IsPlayerControlled())
+	{
+		CurrentWeapon->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	}
+	else
+	{
+		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	}
+
+	return;
+}
+
+
+														/************************************************************************
+														*					WEAPON RELATED LOGIC END							*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

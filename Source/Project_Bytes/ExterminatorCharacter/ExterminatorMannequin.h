@@ -19,22 +19,27 @@ class PROJECT_BYTES_API AExterminatorMannequin : public ACharacter
 
 public:
 	
-	AExterminatorMannequin();			// Sets default values for this character's properties
+	// Default Constructor: Sets default values for this character's properties
+	AExterminatorMannequin();			
 
 protected:
 	
-	virtual void BeginPlay() override;	// Called when the game starts or when spawned
+	// Called when this actor is spawned. Handles initialization events.
+	virtual void BeginPlay() override;	
 
 public:
 
-	virtual void Tick(float DeltaTime) override;															// Called every frame
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;			// Called to bind functionality to input
+	// UNNECESSARY. Called every frame. 
+	virtual void Tick(float DeltaTime) override;															
+	// Binds input keys to functionalities
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// Handles death event. Repositions gun from Mesh1p to Mesh3p on death. 
 	virtual void UnPossessed() override;
 
 
 private:
 	
-	// Pawn mesh 1st person view (arms, seen only by self
+	// Pawn mesh 1st person view (arms, seen only by self)
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	class USkeletalMeshComponent* Mesh1P;
 
@@ -42,7 +47,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FirstPersonCameraComponent;
 
-	class UCharacterMovementComponent *CharacterMovement;		// Character Movement Component
+	// Character Movement Component
+	class UCharacterMovementComponent *CharacterMovement;		
 
 													/************************************************************************
 													*						FUNDAMENTAL LOGIC END							*
@@ -60,10 +66,14 @@ private:
 
 protected:
 	
-	void MoveForward(float Val);				/** Handles moving forward/backward */
-	void MoveRight(float Val);					/** Handles stafing movement, left and right */
-	void TurnAtRate(float Rate);				/** Called via input to turn at a given rate. @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate */
-	void LookUpAtRate(float Rate);				/** Called via input to turn look up/down at a given rate. @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate */
+	// Handles moving forward/backward
+	void MoveForward(float Val);				
+	// Handles stafing movement, left and right
+	void MoveRight(float Val);					
+	// Called via input to turn at a given rate. @param Rate	This is a normalized rate, i.e. 1.0 means 100 % of desired turn rate 
+	void TurnAtRate(float Rate);				
+	// Called via input to turn look up/down at a given rate. @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate 
+	void LookUpAtRate(float Rate);				
 
 public:
 
@@ -77,8 +87,10 @@ public:
 
 protected:
 
-	void GoToSprint();			/** Sprint */
-	void GoToWalk();			/** Walk */
+	/** Sprint */
+	void GoToSprint();			
+	/** Walk */
+	void GoToWalk();			
 
 public:	
 	
@@ -88,7 +100,8 @@ public:
 
 private:
 	
-	float WalkSpeed = 500.0f, SprintSpeed = 1000.f;		/** Different movement speeds */
+	/** Different movement speeds */
+	float WalkSpeed = 500.0f, SprintSpeed = 1000.f;		
 
 
 													/************************************************************************
@@ -146,6 +159,7 @@ public:
 	int MaxStamina = 10;
 
 private:
+
 	// Regenerate stamina
 	UFUNCTION()
 	void RegenerateStamina();
@@ -161,6 +175,7 @@ private:
 	FTimerHandle StaminaDepleteTimerHandle;
 
 public:
+
 	// Player Tokens
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int Tokens = 10;
@@ -184,55 +199,68 @@ public:
 
 public:
 
+	// For Shotgun blueprint attachment
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	TSubclassOf<class AGun> ShotGunBlueprint;
 
+	// For pistol blueprint attachment
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	TSubclassOf<class AGun> PistolBlueprint;
 
+	// For Initiating weapon fire
 	UFUNCTION(BlueprintCallable, Category = "Weapon Details")
 	void PullTrigger();
 
-
-	// Player Aiming
+	// Is Player Aiming?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
 	bool bAiming = false;
 
-	// Player Reloading
+	// Is Player Reloading?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
 	bool bReloading = false;
 
 	// Reload Weapon call
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	void Reload();
+	
+private:
 
 	// Set bReload State
 	void SetReload();
 
-	// Attaching Shotgun BP
+public:
+
+	// Shotgun reference
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	AGun *Shotgun;
 
-	// Attaching pistol BP
+	// Pistol Reference
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	AGun *Pistol;
 
-	// Attaching pistol BP
+	// Current weapon at hand 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	AGun *CurrentWeapon;
 
-
+	// Swap weapons 
 	UFUNCTION(BlueprintCallable, Category = "Weapon Swapping")
 	void ChangeWeapon();
 
+private:
+
+	// Initiate weapon swap
 	void ChangeWeaponInitiate();
+
+	// Attach weapon to hand
 	void AttachWeaponToGripPoint();
 
 	// Active weapon
 	bool IsPistol = false;
 	bool IsShotgun = true;
 
-	// Bool for swapping
+public:
+
+	// Is Player Swapping weapons?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Rotation Details")
 	bool Swapping = false;
 

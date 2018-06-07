@@ -23,15 +23,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ammo Pickup Details")
 	void ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed);
 
-	// Life Span
+	// Life Span. How long is the pick up going to remain in the world?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ammo Pickup Details")
 	float LifeSpan = 10.0f;
 
-	// Indicator life span
+	// Indicator life span. How long will indicator remain active?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ammo Pickup Details")
 	float IndicatorLifeSpan = 2.0f;
 
 protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

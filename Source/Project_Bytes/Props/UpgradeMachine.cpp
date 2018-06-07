@@ -2,10 +2,17 @@
 
 #include "UpgradeMachine.h"
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+																/************************************************************************
+																*						FUNDAMENTAL LOGIC START							*
+																*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+																************************************************************************/
+
 // Sets default values
 AUpgradeMachine::AUpgradeMachine()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 }
 
@@ -13,10 +20,6 @@ void AUpgradeMachine::Initialize(AExterminatorMannequin * PlayerReference)
 {
 	// Getting buyer reference
 	this->PlayerReference = PlayerReference;
-
-	// Getting buyers weapon reference
-	this->ShotgunReference = PlayerReference->Shotgun;
-	this->PistolReference = PlayerReference->Pistol;
 }
 
 // Called when the game starts or when spawned
@@ -32,75 +35,32 @@ void AUpgradeMachine::Tick(float DeltaTime)
 
 }
 
-/*
-	Upgrade Machine Purchase mechanisms.
-	Include 2 step verification.
-	Step 1. Check for player reference and Weapon reference. If NOT NULL Proceed.
-	Step 2. Check Purchase criteria. Meaning, if player has enough tokens.
-*/
 
-bool AUpgradeMachine::AmmoCapacityIncrease()
-{
-	// Mandatory Null pointer check
-	if (PlayerReference && ShotgunReference)
-	{
-		// Purchase criteria check
-		if (PlayerReference->Tokens >= AmmoCapacityPrice)
-		{
-			// Performing Upgrade
-			ShotgunReference->MaxAmmo += 10;					
-		
-			// Deduct Price
-			PlayerReference->Tokens -= AmmoCapacityPrice;		
+																/************************************************************************
+																*						FUNDAMENTAL LOGIC END							*
+																*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+																************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			// Increasing Price of Upgrade
-			AmmoCapacityPrice += 10;
 
-			// Purchase Successful
-			return true;										
-		}
-	}
-	else
-	{
-		// Show error message
-		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+																/************************************************************************
+																*					UPGRADE FUNCTIONALITY LOGIC START					*
+																*				 MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+																************************************************************************/
 
-	// Purchase Failed
-	return false;											
-}
+																/**
+																*		Upgrade Machine Purchase mechanisms.
+																*		Include 2 step verification.
+																*		Step 1. Check for player reference and Weapon reference. If NOT NULL Proceed.
+																*		Step 2. Check Purchase criteria. Meaning, if player has enough tokens.
+																*/
 
-bool AUpgradeMachine::DamageIncrease()
-{
-	// Mandatory Null pointer check
-	if (PlayerReference && ShotgunReference)
-	{
-		// Purchase criteria check
-		if (PlayerReference->Tokens >= DamageIncreasePrice)
-		{
-			// Performing Upgrade
-			ShotgunReference->WeaponDamage += 5;				
 
-			// Deduct Price
-			PlayerReference->Tokens -= DamageIncreasePrice;		
 
-			// Increasing Price of Upgrade
-			DamageIncreasePrice += 10;
+				/** Character related upgrades */
 
-			// Purchase Successful
-			return true;										
-		}
-	}
-	else
-	{
-		// Show error message
-		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-	}
-
-	// Purchase Failed
-	return false;											
-}
-
+// Increases the maximum health capacity of player.
 bool AUpgradeMachine::HealthCapacityIncrease()
 {
 	// Mandatory Null pointer check
@@ -110,16 +70,16 @@ bool AUpgradeMachine::HealthCapacityIncrease()
 		if (PlayerReference->Tokens >= HealthCapacityPrice)
 		{
 			// Performing Upgrade
-			PlayerReference->MaxHealth += 10.0;					
+			PlayerReference->MaxHealth += 10.0;
 
 			// Deduct Price
-			PlayerReference->Tokens -= HealthCapacityPrice;		
+			PlayerReference->Tokens -= HealthCapacityPrice;
 
 			// Increasing Price of Upgrade
-			HealthCapacityPrice += 10;
+			HealthCapacityPrice += IncreaseHealthCapacityPrice;
 
 			// Purchase Successful
-			return true;										
+			return true;
 		}
 	}
 	else
@@ -128,60 +88,30 @@ bool AUpgradeMachine::HealthCapacityIncrease()
 		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
 	}
 
-	// Purchase Failed
-	return false;											
-}
-
-bool AUpgradeMachine::RefillAmmo()
-{
-	// Mandatory Null pointer check
-	if (PlayerReference && ShotgunReference)
-	{
-		// Purchase criteria check
-		if ( (PlayerReference->Tokens >= RefillAmmoPrice) && (ShotgunReference->Ammo < ShotgunReference->MaxAmmo) )
-		{
-			// Performing Upgrade
-			PlayerReference->Shotgun->Ammo = PlayerReference->Shotgun->MaxAmmo;	
-
-			// Deduct Price
-			PlayerReference->Tokens -= RefillAmmoPrice;				
-
-			// Increasing Price of Upgrade
-			++RefillAmmoPrice;
-
-			// Purchase Successful
-			return true;											
-		}
-	}
-	else
-	{
-		// Show error message
-		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
-	}
-	
 	// Purchase Failed
 	return false;
 }
 
+// Refills the player's health and sets it equal to max health.
 bool AUpgradeMachine::RefillHealth()
 {
 	// Mandatory Null pointer check
 	if (PlayerReference)
 	{
 		// Purchase criteria check
-		if ( (PlayerReference->Tokens >= RefillHealthPrice) && (PlayerReference->Health < PlayerReference->MaxHealth) )
+		if ((PlayerReference->Tokens >= RefillHealthPrice) && (PlayerReference->Health < PlayerReference->MaxHealth))
 		{
 			// Performing Upgrade
-			PlayerReference->Health = PlayerReference->MaxHealth;			
+			PlayerReference->Health = PlayerReference->MaxHealth;
 
 			// Deduct Price
-			PlayerReference->Tokens -= RefillHealthPrice;		
+			PlayerReference->Tokens -= RefillHealthPrice;
 
 			// Increasing Price of Upgrade
-			++RefillHealthPrice;
+			RefillHealthPrice += IncreaseRefillHealthPrice;
 
 			// Purchase Successful
-			return true;										
+			return true;
 		}
 	}
 	else
@@ -191,6 +121,212 @@ bool AUpgradeMachine::RefillHealth()
 	}
 
 	// Purchase Failed
-	return false;											
+	return false;
 }
 
+// Increases maximum stamina capacity of player
+bool AUpgradeMachine::StaminaCapacityIncrease()
+{
+	// Mandatory Null pointer check
+	if (PlayerReference)
+	{
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= StaminaCapacityPrice)
+		{
+			// Performing Upgrade
+			PlayerReference->MaxStamina += 2.0;
+
+			// Deduct Price
+			PlayerReference->Tokens -= StaminaCapacityPrice;
+
+			// Increasing Price of Upgrade
+			StaminaCapacityPrice += IncreaseStaminaCapacityPrice;
+
+			// Purchase Successful
+			return true;
+		}
+	}
+	else
+	{
+		// Show error message
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+	}
+
+	// Purchase Failed
+	return false;
+}
+
+				/** Pistol related upgrades */
+
+// Increases the maximum ammo of pistol carriable by the player.
+bool AUpgradeMachine::PistolAmmoCapacityIncrease()
+{
+	// Mandatory Null pointer check
+	if (PlayerReference)
+	{
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= AmmoCapacityPrice)
+		{
+			// Performing Upgrade
+			PlayerReference->Pistol->MaxAmmo += 10;
+
+			// Deduct Price
+			PlayerReference->Tokens -= AmmoCapacityPrice;
+
+			// Increasing Price of Upgrade
+			AmmoCapacityPrice += IncreaseAmmoCapacityPrice;
+
+			// Purchase Successful
+			return true;
+		}
+	}
+	else
+	{
+		// Show error message
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+	}
+
+	// Purchase Failed
+	return false;
+}
+
+// Increases the damage done by the pistol.
+bool AUpgradeMachine::PistolDamageIncrease()
+{
+	// Mandatory Null pointer check
+	if (PlayerReference)
+	{
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= DamageIncreasePrice)
+		{
+			// Performing Upgrade
+			PlayerReference->Pistol->WeaponDamage += 5;
+
+			// Deduct Price
+			PlayerReference->Tokens -= DamageIncreasePrice;
+
+			// Increasing Price of Upgrade
+			DamageIncreasePrice += IncreaseDamageIncreasePrice;
+
+			// Purchase Successful
+			return true;
+		}
+	}
+	else
+	{
+		// Show error message
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+	}
+
+	// Purchase Failed
+	return false;
+}
+
+				/** Shotgun related upgrades */
+
+// Increases the maximum ammo of shotgun carriable by the player.
+bool AUpgradeMachine::ShotgunAmmoCapacityIncrease()
+{
+	// Mandatory Null pointer check
+	if (PlayerReference)
+	{
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= AmmoCapacityPrice)
+		{
+			// Performing Upgrade
+			PlayerReference->Shotgun->MaxAmmo += 10;
+
+			// Deduct Price
+			PlayerReference->Tokens -= AmmoCapacityPrice;
+
+			// Increasing Price of Upgrade
+			AmmoCapacityPrice += IncreaseAmmoCapacityPrice;
+
+			// Purchase Successful
+			return true;
+		}
+	}
+	else
+	{
+		// Show error message
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+	}
+
+	// Purchase Failed
+	return false;
+}
+
+// Increases the damage done by the shotgun.
+bool AUpgradeMachine::ShotgunDamageIncrease()
+{
+	// Mandatory Null pointer check
+	if (PlayerReference)
+	{
+		// Purchase criteria check
+		if (PlayerReference->Tokens >= DamageIncreasePrice)
+		{
+			// Performing Upgrade
+			PlayerReference->Shotgun->WeaponDamage += 5;
+
+			// Deduct Price
+			PlayerReference->Tokens -= DamageIncreasePrice;
+
+			// Increasing Price of Upgrade
+			DamageIncreasePrice += IncreaseDamageIncreasePrice;
+
+			// Purchase Successful
+			return true;
+		}
+	}
+	else
+	{
+		// Show error message
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+	}
+
+	// Purchase Failed
+	return false;
+}
+
+			/** Common Weapon related upgrades */
+
+// Refill ammo for all weapons.
+bool AUpgradeMachine::RefillAmmo()
+{
+	// Mandatory Null pointer check
+	if (PlayerReference)
+	{
+		// Purchase criteria check
+		if ( (PlayerReference->Tokens >= RefillAmmoPrice) && ( (PlayerReference->Shotgun->Ammo < PlayerReference->Shotgun->MaxAmmo) || (PlayerReference->Pistol->Ammo < PlayerReference->Pistol->MaxAmmo) ) )
+		{
+			// Performing Upgrade
+			PlayerReference->Shotgun->Ammo = PlayerReference->Shotgun->MaxAmmo;
+			PlayerReference->Pistol->Ammo = PlayerReference->Pistol->MaxAmmo;
+
+			// Deduct Price
+			PlayerReference->Tokens -= RefillAmmoPrice;
+
+			// Increasing Price of Upgrade
+			RefillAmmoPrice += IncreaseRefillAmmoPrice;
+
+			// Purchase Successful
+			return true;
+		}
+	}
+	else
+	{
+		// Show error message
+		UE_LOG(LogTemp, Warning, TEXT("Pointer Error From Upgrade Machine"))
+	}
+
+	// Purchase Failed
+	return false;
+}
+
+
+
+																/************************************************************************
+																*					UPGRADE FUNCTIONALITY LOGIC END						*
+																*				 MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+																************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

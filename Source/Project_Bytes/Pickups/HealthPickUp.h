@@ -28,11 +28,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health Pickup Details")
 	void ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed);
 
-	// Life Span
+	// Life Span. How long is the pick up going to remain in the world?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Health Pickup Details")
 	float LifeSpan = 10.0f;
 
-	// Indicator life span
+	// Indicator life span. How long is the indicator going to remain active?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Health Pickup Details")
 	float IndicatorLifeSpan = 2.0f;
 

@@ -8,7 +8,7 @@
 AHealthPickUp::AHealthPickUp()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 }
 
@@ -35,6 +35,7 @@ void AHealthPickUp::Tick(float DeltaTime)
 
 void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed)
 {
+	// Mandatory null pointer check
 	if (Player && SoundSuccess && SoundFailed)
 	{
 		PlayerReference = Player;

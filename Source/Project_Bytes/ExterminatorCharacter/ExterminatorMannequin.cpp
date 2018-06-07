@@ -54,7 +54,7 @@ void AExterminatorMannequin::BeginPlay()
 	if (ShotGunBlueprint == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SHOTGUN BLUEPRINT MISSING!"))
-			return;
+		return;
 	}
 	else
 	{
@@ -65,7 +65,7 @@ void AExterminatorMannequin::BeginPlay()
 	if (PistolBlueprint == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PISTOL BLUEPRINT MISSING!"))
-			return;
+		return;
 	}
 	else
 	{
@@ -191,9 +191,11 @@ void AExterminatorMannequin::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+// Goes to sprinting state
 void AExterminatorMannequin::GoToSprint()
 {
-	if (Stamina > 0)	// Able to sprint
+	// Able to sprint. Can't sprint while reloading or aiming down sight
+	if (Stamina > 0 && !bReloading && !bAiming)	
 	{
 		// Is Regeneration going on?
 		if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
@@ -205,6 +207,7 @@ void AExterminatorMannequin::GoToSprint()
 		// Set character to sprint
 		CharacterMovement->MaxWalkSpeed = SprintSpeed;
 
+		// Set sprinting state to true
 		bSprinting = true;
 
 		// Depleting Stamina by 1 per second
@@ -218,6 +221,7 @@ void AExterminatorMannequin::GoToSprint()
 	return;
 }
 
+// Goes to walking state
 void AExterminatorMannequin::GoToWalk()
 {
 	// Is Depletion going on?
@@ -256,81 +260,107 @@ void AExterminatorMannequin::GoToWalk()
 														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
 														************************************************************************/
 
+// Heals player. Regenerates health by Amount.
 bool AExterminatorMannequin::Heal(float Amount)
 {
-	if (Health < MaxHealth)		// Possible to Heal
+	// Possible to Heal
+	if (Health < MaxHealth)		
 	{
-		Health += Amount;		// Heal
+		// Heal
+		Health += Amount;		
 
-		if (Health > MaxHealth)	// Boundary Check
+		// Boundary Check
+		if (Health > MaxHealth)	
 		{
 			Health = MaxHealth;
 		}
 
+		// Turn off display health full indicator
 		bDisplayHealthFull = false;
 
-		return true;			// Successful healing
+		// Successful healing
+		return true;			
 	}
 	else
 	{
+		// Health full. Turn on display health full indicator
 		bDisplayHealthFull = true;
 	}
 
-	return false;				// Unsuccessful healing
+	// Unsuccessful healing
+	return false;				
 }
 
+// Damages player. Deducts health by Amount.
 bool AExterminatorMannequin::TakeDamage(float Amount)
 {
-	if (!bIsDead)	// Is Player Alive?
+	// Is Player Alive?
+	if (!bIsDead)	
 	{
+		// Deduct health. As in plaer is taking damage
 		Health -= Amount;
 
-		bTakingDamage = true;	// Turning on Damage Indicator
+		// Turning on display Damage Indicator
+		bTakingDamage = true;	
 
-		if (Health <= 0.0)		// Boundary Check
+		// Boundary Check
+		if (Health <= 0.0)		
 		{
+			// Health can't be negative
 			Health = 0.0;
 
-			bIsDead = true;		// Killed player
+			// Killed player
+			bIsDead = true;		
 		}
 	}
 
+	// Return death status. True for dead. False for alive.
 	return bIsDead;
 }
 
+// Regenerate player's stamina when walking.
 void AExterminatorMannequin::RegenerateStamina()
 {
+	// Boundary check.
 	if (Stamina < MaxStamina)
 	{
+		// Regenerate stamina
 		++Stamina;
 	}
+	// Stamina full. Turn off regeneration.
 	else if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
 	{
-		// Don't Deplete Stamina anymore
+		// Don't regenerate Stamina anymore
 		GetWorldTimerManager().ClearTimer(StaminaRegenerateTimerHandle);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Walking"));
+	/*UE_LOG(LogTemp, Warning, TEXT("Walking"));*/
 
 	return;
 }
 
+// Depletes player's stamina when sprinting.
 void AExterminatorMannequin::DepleteStamina()
 {
+	// Boundary check
 	if (Stamina > 0)
 	{
+		// Deplete stamina
 		--Stamina;
 	}
+	// Player is exhausted.
 	else
 	{
+		// Can't sprint. Just walk.
 		GoToWalk();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Sprinting"));
+	/*UE_LOG(LogTemp, Warning, TEXT("Sprinting"));*/
 
 	return;
 }
 
+// Increase player's token by IncreaseAmount
 void AExterminatorMannequin::IncreaseTokens(int IncreaseAmount)
 {
 	Tokens += IncreaseAmount;
@@ -353,9 +383,13 @@ void AExterminatorMannequin::IncreaseTokens(int IncreaseAmount)
 														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
 														************************************************************************/
 
+// Initiates means that just calling the function that actually does it or just turning a boolean value to true. 
+
+// Initiates gun firing. Actual firing logic at Gun.cpp
 void AExterminatorMannequin::PullTrigger()
 {
-	if (CurrentWeapon->Ammo > 0)	// Check If Gun Has Enough Ammo to fire
+	// Check If Gun Has Enough Ammo to fire.If player is reloading or sprinting or swapping, then he can't shoot.
+	if (CurrentWeapon->Ammo > 0 && !bReloading && !bSprinting && !Swapping)	
 	{
 		// Does the clip have enough bullets?
 		if (CurrentWeapon->ClipSize <= 0)
@@ -365,14 +399,15 @@ void AExterminatorMannequin::PullTrigger()
 		}
 		else
 		{
-			// Yes. Shoot.
-			CurrentWeapon->OnFire();	// Tell Gun To Fire
+			// Yes. Tell Gun To Fire
+			CurrentWeapon->OnFire();	
 		}
 	}
 
 	return;
 }
 
+// Calls actual reload function. This gets called by the Animation blueprint.
 void AExterminatorMannequin::Reload()
 {
 
@@ -382,19 +417,23 @@ void AExterminatorMannequin::Reload()
 	return;
 }
 
+// Initiates reloading. Actual relading logic at Gun.cpp
 void AExterminatorMannequin::SetReload()
 {
-	// Checking if there is ammo to reload and clip is empty
+	// Checking if there is ammo to reload and if the clip is empty
 	if ((CurrentWeapon->Ammo > 0) && (CurrentWeapon->ClipSize < CurrentWeapon->MaxClipSize))
 	{
+		// Set reload state to true
 		bReloading = true;
 	}
 
 	return;
 }
 
+// Initiates swapping or changing weapons. Actual changing logic is ChangeWeapon() function.
 void AExterminatorMannequin::ChangeWeaponInitiate()
 {
+	// Set player state to swapping weapons.
 	Swapping = true;
 
 	// Is Shotgun the current weapon?
@@ -414,40 +453,49 @@ void AExterminatorMannequin::ChangeWeaponInitiate()
 	return;
 }
 
+// Changes weapons. Called by the Animation Blueprint.
 void AExterminatorMannequin::ChangeWeapon()
 {
+	// Detach from hand.
 	CurrentWeapon->DetachRootComponentFromParent();
+	// Attach weapon to the back.
 	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("shotgun_clip"));
+	// Correctly position the weapon on the back so it doesn't stick out.
 	CurrentWeapon->SetActorRelativeRotation(RotateWeaponSwapped);
 
-	// Checking to see which weapon the current weapon is
+	// Is Pistol suppose to be the current weapon?
 	if (IsPistol)
 	{
 		CurrentWeapon = Pistol;
 
-		UE_LOG(LogTemp, Warning, TEXT("PISTOL"))
+		/*UE_LOG(LogTemp, Warning, TEXT("PISTOL"))*/
 	}
+	// Shotgun is supposed to be the current weapon.
 	else
 	{
 		CurrentWeapon = Shotgun;
 
-		UE_LOG(LogTemp, Warning, TEXT("SHOTGUN"))
+		/*UE_LOG(LogTemp, Warning, TEXT("SHOTGUN"))*/
 	}
 
+	// Attach current weapon to hand.
 	AttachWeaponToGripPoint();
 
 	return;
 }
 
+// Attach the current weapon to grippoint which is the hand.
 void AExterminatorMannequin::AttachWeaponToGripPoint()
 {
-	// Ataching weapon to socket
+	// Is the character player controlled? Then attach it to mesh1p. Otherwise attach to mesh3p.
 	if (IsPlayerControlled())
 	{
+		// Ataching weapon to GripPoint socket
 		CurrentWeapon->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 	else
 	{
+		// Ataching weapon to GripPoint socket
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 

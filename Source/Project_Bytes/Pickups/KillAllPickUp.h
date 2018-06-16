@@ -3,16 +3,16 @@
 #pragma once
 
 #include "PickUpProperties.h"
-#include "HealthPickUp.generated.h"
+#include "KillAllPickUp.generated.h"
 
 UCLASS()
-class PROJECT_BYTES_API AHealthPickUp : public APickUpProperties
+class PROJECT_BYTES_API AKillAllPickUp : public APickUpProperties
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AHealthPickUp();
+	AKillAllPickUp();
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,18 +22,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Process Pickup event
-	UFUNCTION(BlueprintCallable, Category = "Health Pickup Details")
-	void ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed);
-
-private:
-
-	// Turn off Indicator Display
-	UFUNCTION()
-	void TurnOffIndicator() override;
-
 	// Destroy Actor when life span expires
 	UFUNCTION()
 	void DestroyActor() override;
+	
 	
 };

@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "HealthPickUp.h"
-#include "Classes/Kismet/GameplayStatics.h"
-#include "Public/TimerManager.h"
 
 // Sets default values
 AHealthPickUp::AHealthPickUp()
@@ -62,7 +60,7 @@ void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBa
 			PlayerReference->bDisplayHealthFull = true;
 
 			// Display indicator for sometime
-			GetWorldTimerManager().SetTimer(HealthFullTimerHandle, this, &AHealthPickUp::TurnOffIndicator, IndicatorLifeSpan, true);
+			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AHealthPickUp::TurnOffIndicator, IndicatorLifeSpan, true);
 		}
 	}
 
@@ -76,30 +74,21 @@ void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBa
 
 void AHealthPickUp::TurnOffIndicator()
 {
-	// Checking if timer is on
-	if (GetWorldTimerManager().IsTimerActive(HealthFullTimerHandle))
-	{
-		// Turn of indicator
-		PlayerReference->bDisplayHealthFull = false;
+	// Turn of indicator
+	PlayerReference->bDisplayHealthFull = false;
 
-		// Clear timer 
-		GetWorldTimerManager().ClearTimer(HealthFullTimerHandle);
-	}
+	Super::TurnOffIndicator();
 
 	return;
 }
 
 void AHealthPickUp::DestroyActor()
 {
+	
 	// Has Actor been called for destruction yet?
 	if (!AHealthPickUp::IsPendingKill())
 	{
-		// Nope. Then check if the timer is active
-		if (GetWorldTimerManager().IsTimerActive(LifeSpanTimerHandle))
-		{
-			// Ending life span
-			GetWorldTimerManager().ClearTimer(LifeSpanTimerHandle);
-		}
+		Super::DestroyActor();
 
 		// Destroy actor
 		AHealthPickUp::Destroy();

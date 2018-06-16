@@ -133,6 +133,9 @@ void AExterminatorMannequin::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	// Weapon Switching
 	PlayerInputComponent->BindAction("SwitchUp", IE_Pressed, this, &AExterminatorMannequin::ChangeWeaponInitiate);
 	PlayerInputComponent->BindAction("SwitchDown", IE_Pressed, this, &AExterminatorMannequin::ChangeWeaponInitiate);
+
+	// Invincibility
+	PlayerInputComponent->BindAction("Invincibility", IE_Pressed, this, &AExterminatorMannequin::MakeInvincible);
 }
 
 // On Death event
@@ -294,23 +297,27 @@ bool AExterminatorMannequin::Heal(float Amount)
 // Damages player. Deducts health by Amount.
 bool AExterminatorMannequin::TakeDamage(float Amount)
 {
-	// Is Player Alive?
-	if (!bIsDead)	
+	// Is Player Invincible?
+	if (!bInvincibility)
 	{
-		// Deduct health. As in plaer is taking damage
-		Health -= Amount;
-
-		// Turning on display Damage Indicator
-		bTakingDamage = true;	
-
-		// Boundary Check
-		if (Health <= 0.0)		
+		// Is Player Alive?
+		if (!bIsDead)	
 		{
-			// Health can't be negative
-			Health = 0.0;
+			// Deduct health. As in plaer is taking damage
+			Health -= Amount;
 
-			// Killed player
-			bIsDead = true;		
+			// Turning on display Damage Indicator
+			bTakingDamage = true;	
+
+			// Boundary Check
+			if (Health <= 0.0)		
+			{
+				// Health can't be negative
+				Health = 0.0;
+
+				// Killed player
+				bIsDead = true;		
+			}
 		}
 	}
 
@@ -399,6 +406,12 @@ void AExterminatorMannequin::PullTrigger()
 		}
 		else
 		{
+			// Decrease one hit kill amount if there is any
+			if (OneHitKillAmmo)
+			{
+				OneHitKillAmmo--;
+			}
+
 			// Yes. Tell Gun To Fire
 			CurrentWeapon->OnFire();	
 		}
@@ -499,6 +512,12 @@ void AExterminatorMannequin::AttachWeaponToGripPoint()
 		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 
+	if (IsPistol)
+	{
+		CurrentWeapon->SetActorRelativeRotation(RotatePistol);
+		CurrentWeapon->SetActorRelativeLocation(LocatePistol);
+	}
+
 	return;
 }
 
@@ -507,4 +526,74 @@ void AExterminatorMannequin::AttachWeaponToGripPoint()
 														*					WEAPON RELATED LOGIC END							*
 														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
 														************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+														/************************************************************************
+														*						PICKUP RELATED LOGIC START						*
+														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+														************************************************************************/
+
+// Player tries to pickup invincibility pickup
+bool AExterminatorMannequin::PickUpInvincibility()
+{
+	// Can player pickup
+	if (InvincibilityPickups < MaxInvincibilityPickups)
+	{
+		// Yes.
+		InvincibilityPickups++;
+		return true;
+	}
+	else
+	{
+		// No.
+		return false;
+	}
+}
+
+// Makes player invincible. Meaning he can't take damage.
+void AExterminatorMannequin::MakeInvincible()
+{
+	if (!bInvincibility)
+	{
+		bInvincibility = true;
+
+		// Set time limit to invincibility
+		GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &AExterminatorMannequin::MakeMortal, InvincibleTimer, true);
+	}
+	
+	return;
+}
+
+// Makes player a mortal. Meaning he can take damage.
+void AExterminatorMannequin::MakeMortal()
+{
+	if (bInvincibility)
+	{
+		bInvincibility = false;
+
+		// Checking if timer is on
+		if (GetWorldTimerManager().IsTimerActive(InvincibleTimerHandle))
+		{
+			// Clear timer 
+			GetWorldTimerManager().ClearTimer(InvincibleTimerHandle);
+		}
+	}
+	
+	return;
+}
+
+// Increases One hit kill ammo
+void AExterminatorMannequin::IncreaseOneHitKillAmmo(int Amount)
+{
+	OneHitKillAmmo += Amount;
+
+	return;
+}
+
+													/************************************************************************
+													*						PICKUP RELATED LOGIC END						*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

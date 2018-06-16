@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Public/TimerManager.h"
 #include "ExterminatorMannequin.generated.h"
 
 
@@ -254,11 +255,14 @@ private:
 	// Attach weapon to hand
 	void AttachWeaponToGripPoint();
 
-	// Active weapon
-	bool IsPistol = false;
-	bool IsShotgun = true;
-
 public:
+
+	// Active weapon
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	bool IsPistol = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	bool IsShotgun = true;
 
 	// Is Player Swapping weapons?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Rotation Details")
@@ -268,8 +272,78 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Rotation Details")
 	FRotator RotateWeaponSwapped = FRotator(0, 0, 90);
 
+	// Rotating pistol
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pistol Rotation Details")
+	FRotator RotatePistol = FRotator(0, 0, 0);
+
+	// Resetting pistol
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pistol Location Details")
+	FVector LocatePistol = FVector(0.0f, 0.0f, 0.0f);
+
 													/************************************************************************
 													*					WEAPON RELATED LOGIC END							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+													/************************************************************************
+													*						PICKUP RELATED LOGIC START						*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+	
+													/** Invincibility portion */
+
+public:
+	// Is Player Invincibile?
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	bool bInvincibility = false;
+
+	// Is Player Invincibility pick up full?
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Pickup Details")
+	bool bInvincibilityPickupFull = false;
+
+	// Invincibility pickup count
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character pickup Details")
+	int InvincibilityPickups = 0;
+
+	// Invincibility pickup max count
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character pickup Details")
+	int MaxInvincibilityPickups = 2;
+
+	// Invincibility pickup max count
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character pickup Details")
+	float InvincibleTimer = 10.0f;
+
+
+	// Player picks up invincibility
+	bool PickUpInvincibility();
+
+	// Makes player Invincible
+	void MakeInvincible();
+
+	// Makes player Mortal
+	UFUNCTION(BlueprintCallable, Category = "Pickup Details")
+	void MakeMortal();
+
+private:
+	// Timer Handle for Health full indicator
+	FTimerHandle InvincibleTimerHandle;
+
+													/** One Shot Kill Portion */
+
+public:
+	// Instant kill Ammo count
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character pickup Details")
+	int OneHitKillAmmo = 0;
+
+	// Increase One Kill Ammo
+	UFUNCTION(BlueprintCallable, Category = "Pickup Details")
+	void IncreaseOneHitKillAmmo(int Amount);
+
+
+													/************************************************************************
+													*						PICKUP RELATED LOGIC END						*
 													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
 													************************************************************************/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

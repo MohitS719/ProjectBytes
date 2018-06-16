@@ -3,37 +3,40 @@
 #pragma once
 
 #include "PickUpProperties.h"
-#include "AmmoPickup.generated.h"
+#include "InvincibilityPickup.generated.h"
 
 UCLASS()
-class PROJECT_BYTES_API AAmmoPickup : public APickUpProperties
+class PROJECT_BYTES_API AInvincibilityPickup : public APickUpProperties
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AAmmoPickup();
+	AInvincibilityPickup();
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Process Pickup event
-	UFUNCTION(BlueprintCallable, Category = "Ammo Pickup Details")
+	UFUNCTION(BlueprintCallable, Category = "Health Pickup Details")
 	void ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed);
-
-protected:
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 private:
 
+	// Player Reference
+	AExterminatorMannequin * PlayerReference;
+
 	// Turn off Indicator Display
 	UFUNCTION()
-	void TurnOffIndicator() override;
+	void TurnOffIndicator();
 
 	// Destroy Actor when life span expires
 	UFUNCTION()
-	void DestroyActor() override;
-
+	void DestroyActor();
+	
 };

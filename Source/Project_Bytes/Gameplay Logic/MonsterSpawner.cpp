@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MonsterSpawner.h"
-#include "Public/TimerManager.h"
 
 // Sets default values
 AMonsterSpawner::AMonsterSpawner()
@@ -10,7 +9,6 @@ AMonsterSpawner::AMonsterSpawner()
 	PrimaryActorTick.bCanEverTick = false;
 
 }
-
 
 // Called when the game starts or when spawned
 void AMonsterSpawner::BeginPlay()
@@ -28,30 +26,61 @@ void AMonsterSpawner::Tick(float DeltaTime)
 
 void AMonsterSpawner::DecreaseCountDownTimer()
 {
-	// Count down greater than zero
-	if (CountDownTimer > 0)			
+	// Count down greater than zero and is player outside the upgrade machine?
+	if (CountDownTimer > 0 && !(UpgradeMachineReference->InUpgradeMachine))
 	{
 		// Decrease timer by 1
 		--CountDownTimer;			
 	}
 	// If timer is equal to zero check if timerhandler is still going
-	else if (GetWorldTimerManager().IsTimerActive(CountDownTimerHandler))	
+	else if (CountDownTimer <= 0)
 	{
-		// Stop calling count down timer
-		GetWorldTimerManager().ClearTimer(CountDownTimerHandler);
-
-		// Reset
-		TimerOn = false;
-
-		// First time called?
-		if (GetReady)
+		if (GetWorldTimerManager().IsTimerActive(CountDownTimerHandler))
 		{
-			GetReady = false;
+			// Stop calling count down timer
+			GetWorldTimerManager().ClearTimer(CountDownTimerHandler);
+
+			// Reset
+			TimerOn = false;
+
+			// First time called?
+			if (GetReady)
+			{
+				GetReady = false;
+			}
+			else if (WaveCleared)
+			{
+				WaveCleared = false;
+			}
 		}
-		else if (WaveCleared)
-		{
-			WaveCleared = false;
-		}
+	}
+
+	return;
+}
+
+void AMonsterSpawner::Initialization(AUpgradeMachine * UpgradeMachine)
+{
+	UpgradeMachineReference = UpgradeMachine;
+
+	return;
+}
+
+void AMonsterSpawner::PrepareForNextWave()
+{
+	// Increase wave number
+	++WaveNumber;
+
+	// Reset count down timer
+	CountDownTimer = 30;
+
+	// Is Wave number even or greater than 10?
+	if ( (WaveNumber & 1) || (WaveNumber > 10) )
+	{
+		MonsterHealth += 10;
+	}
+	else
+	{
+		MonsterCount += WaveNumber;
 	}
 
 	return;

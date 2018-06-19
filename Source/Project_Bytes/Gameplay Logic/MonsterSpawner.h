@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Public/TimerManager.h"
+#include "../Props/UpgradeMachine.h"
+#include "../Engine/Classes/Engine/Engine.h"
 #include "MonsterSpawner.generated.h"
 
 UCLASS()
@@ -11,9 +14,13 @@ class PROJECT_BYTES_API AMonsterSpawner : public AActor
 {
 	GENERATED_BODY()
 	
+	// Upgrade Machine reference
+	AUpgradeMachine *UpgradeMachineReference;
+	
 public:	
 	// Sets default values for this actor's properties
 	AMonsterSpawner();
+
 
 	/*
 		Spawner essential variables
@@ -40,8 +47,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawner Details")
 	bool WaveCleared = false;
 
-	UFUNCTION(BlueprintCallable, Category = "Character Details")
+	UFUNCTION(BlueprintCallable, Category = "Spawner Details")
 	void CallTimer();
+
+	UFUNCTION(BlueprintCallable, Category = "Spawner Details")
+	void Initialization(AUpgradeMachine * UpgradeMachine);
+
+	UFUNCTION(BlueprintCallable, Category = "Spawner Details")
+	void PrepareForNextWave();
 
 private:
 	UFUNCTION()

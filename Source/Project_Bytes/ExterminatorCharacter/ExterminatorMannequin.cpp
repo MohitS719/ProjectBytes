@@ -542,7 +542,7 @@ bool AExterminatorMannequin::PickUpInvincibility()
 	if (InvincibilityPickups < MaxInvincibilityPickups)
 	{
 		// Yes.
-		InvincibilityPickups++;
+		++InvincibilityPickups;
 		return true;
 	}
 	else
@@ -558,6 +558,8 @@ void AExterminatorMannequin::MakeInvincible()
 	if (!bInvincibility)
 	{
 		bInvincibility = true;
+
+		InvincibilityPickups--;
 
 		// Set time limit to invincibility
 		GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &AExterminatorMannequin::MakeMortal, InvincibleTimer, true);

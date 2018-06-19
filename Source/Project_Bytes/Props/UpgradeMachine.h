@@ -50,6 +50,9 @@ public:
 															************************************************************************/
 
 public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Upgrade Price Details")
+	bool InUpgradeMachine = false;
+
 							/**	Upgrade Prices	*/
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Upgrade Price Details")

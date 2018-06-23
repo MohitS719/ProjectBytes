@@ -217,7 +217,7 @@ void AExterminatorMannequin::GoToSprint()
 		bSprinting = true;
 
 		// Depleting Stamina by 1 per second
-		GetWorldTimerManager().SetTimer(StaminaDepleteTimerHandle, this, &AExterminatorMannequin::DepleteStamina, 1.0f, true);
+		GetWorldTimerManager().SetTimer(StaminaDepleteTimerHandle, this, &AExterminatorMannequin::DepleteStamina, 0.1f, true);
 	}
 	else				// Not able to sprint. Out of breath
 	{
@@ -246,7 +246,7 @@ void AExterminatorMannequin::GoToWalk()
 	if (Stamina < MaxStamina)
 	{
 		// Regenerate Stamina by 1 per second
-		GetWorldTimerManager().SetTimer(StaminaRegenerateTimerHandle, this, &AExterminatorMannequin::RegenerateStamina, 1.0f, true);
+		GetWorldTimerManager().SetTimer(StaminaRegenerateTimerHandle, this, &AExterminatorMannequin::RegenerateStamina, 0.1f, true);
 	}
 
 	return;
@@ -304,7 +304,7 @@ void AExterminatorMannequin::RegenerateStamina()
 	if (Stamina < MaxStamina)
 	{
 		// Regenerate stamina
-		++Stamina;
+		Stamina += 0.1f;
 	}
 	// Stamina full. Turn off regeneration.
 	else if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
@@ -322,10 +322,10 @@ void AExterminatorMannequin::RegenerateStamina()
 void AExterminatorMannequin::DepleteStamina()
 {
 	// Boundary check
-	if (Stamina > 0)
+	if (Stamina > 0.0)
 	{
 		// Deplete stamina
-		--Stamina;
+		Stamina -= 0.1;
 	}
 	// Player is exhausted.
 	else

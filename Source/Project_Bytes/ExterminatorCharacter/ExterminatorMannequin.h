@@ -145,11 +145,11 @@ public:
 
 	// Player Stamina
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
-	int Stamina = 10;
+	float Stamina = 10;
 
 	// Player Max Stamina
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
-	int MaxStamina = 10;
+	float MaxStamina = 10;
 
 private:
 

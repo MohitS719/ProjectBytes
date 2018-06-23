@@ -136,6 +136,9 @@ void AExterminatorMannequin::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 	// Invincibility
 	PlayerInputComponent->BindAction("Invincibility", IE_Pressed, this, &AExterminatorMannequin::MakeInvincible);
+
+	// Healing
+	PlayerInputComponent->BindAction("Heal", IE_Pressed, this, &AExterminatorMannequin::Heal);
 }
 
 // On Death event
@@ -262,37 +265,6 @@ void AExterminatorMannequin::GoToWalk()
 														*					PROPERTY RELATED LOGIC START						*
 														*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
 														************************************************************************/
-
-// Heals player. Regenerates health by Amount.
-bool AExterminatorMannequin::Heal(float Amount)
-{
-	// Possible to Heal
-	if (Health < MaxHealth)		
-	{
-		// Heal
-		Health += Amount;		
-
-		// Boundary Check
-		if (Health > MaxHealth)	
-		{
-			Health = MaxHealth;
-		}
-
-		// Turn off display health full indicator
-		bDisplayHealthFull = false;
-
-		// Successful healing
-		return true;			
-	}
-	else
-	{
-		// Health full. Turn on display health full indicator
-		bDisplayHealthFull = true;
-	}
-
-	// Unsuccessful healing
-	return false;				
-}
 
 // Damages player. Deducts health by Amount.
 bool AExterminatorMannequin::TakeDamage(float Amount)
@@ -588,6 +560,54 @@ void AExterminatorMannequin::IncreaseOneHitKillAmmo(int Amount)
 	OneHitKillAmmo += Amount;
 
 	return;
+}
+
+// Heals player. Regenerates health by Amount.
+void AExterminatorMannequin::Heal()
+{
+	// Does player have item to heal?
+	if (HealthPickups)
+	{
+		// Is it possible to Heal?
+		if (Health < MaxHealth)
+		{
+			// Use Health pickup
+			--HealthPickups;
+
+			// Heal
+			Health += HealAmount;
+
+			// Boundary Check
+			if (Health > MaxHealth)
+			{
+				Health = MaxHealth;
+			}
+
+			// Turn off display health full indicator
+			bDisplayHealthFull = false;
+		}
+		else
+		{
+			// Health full. Turn on display health full indicator
+			bDisplayHealthFull = true;
+		}
+	}
+
+	return;
+}
+
+// Pick up a health pickup or health restoration item
+bool AExterminatorMannequin::PickupHealth()
+{
+	// Can the player pick up?
+	if (HealthPickups < MaxHealthPickups)
+	{
+		++HealthPickups;
+
+		return true;
+	}
+
+	return false;
 }
 
 													/************************************************************************

@@ -127,17 +127,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	float MaxHealth = 100.0;
 
-	// Heal Player, returns successful healing or not
-	UFUNCTION(BlueprintCallable, Category = "Character Details")
-	bool Heal(float Amount);
-
 	// Damage player, return true if damaged
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	bool TakeDamage(float Amount);
-
-	// Display player health full
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
-	bool bDisplayHealthFull = false;
 
 	// Display player taking damage
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
@@ -341,7 +333,32 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Pickup Details")
 	void IncreaseOneHitKillAmmo(int Amount);
 
+													/** Health pickup portion */
 
+public:
+	// Number of med packs
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
+	int HealthPickups = 0;
+
+	// Max number of med packs
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
+	int MaxHealthPickups = 4;
+
+	// Heal Player, returns successful healing or not
+	UFUNCTION(BlueprintCallable, Category = "Character Pickup Details")
+	bool PickupHealth();
+
+	// Display player health full
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
+	bool bDisplayHealthFull = false;
+
+	// Max number of med packs
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
+	float HealAmount = 25.0f;
+
+private:
+	// Heal Player, returns successful healing or not
+	void Heal();
 													/************************************************************************
 													*						PICKUP RELATED LOGIC END						*
 													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*

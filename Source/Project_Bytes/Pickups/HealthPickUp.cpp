@@ -39,7 +39,7 @@ void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBa
 		PlayerReference = Player;
 
 		// Try To Increase Health
-		if (PlayerReference->Heal(10.0))
+		if (PlayerReference->PickupHealth())
 		{
 			// Successful
 

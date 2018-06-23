@@ -92,6 +92,7 @@ bool AGun::ReloadWeapon()
 	{
 		// Deducting from total ammo
 		Ammo -= (MaxClipSize-ClipSize);
+
 		// Refilling clip
 		ClipSize = MaxClipSize;
 

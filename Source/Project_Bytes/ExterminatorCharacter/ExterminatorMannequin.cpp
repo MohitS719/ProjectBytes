@@ -395,26 +395,22 @@ void AExterminatorMannequin::IncreaseTokens(int IncreaseAmount)
 // Initiates gun firing. Actual firing logic at Gun.cpp
 void AExterminatorMannequin::PullTrigger()
 {
-	// Check If Gun Has Enough Ammo to fire.If player is reloading or sprinting or swapping, then he can't shoot.
-	if (CurrentWeapon->Ammo > 0 && !bReloading && !bSprinting && !Swapping)	
+	// Check If Gun Has Enough Ammo in the clip to fire.If player is reloading or sprinting or swapping, then he can't shoot.
+	if (CurrentWeapon->ClipSize > 0 && !bReloading && !bSprinting && !Swapping)	
 	{
-		// Does the clip have enough bullets?
-		if (CurrentWeapon->ClipSize <= 0)
+		// Decrease one hit kill amount if there is any
+		if (OneHitKillAmmo)
 		{
-			// Call Reload
-			Reload();
+			OneHitKillAmmo--;
 		}
-		else
-		{
-			// Decrease one hit kill amount if there is any
-			if (OneHitKillAmmo)
-			{
-				OneHitKillAmmo--;
-			}
 
-			// Yes. Tell Gun To Fire
-			CurrentWeapon->OnFire();	
-		}
+		// Yes. Tell Gun To Fire
+		CurrentWeapon->OnFire();	
+	}
+	else if (CurrentWeapon->ClipSize <= 0)
+	{
+		// Call Reload
+		SetReload();
 	}
 
 	return;

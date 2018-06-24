@@ -59,6 +59,8 @@ void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase
 			// Inventory full
 			PlayerReference->CurrentWeapon->bDisplayAmmoFull = true;
 
+			PlayerReference->Indicator = 2;
+
 			// Display indicator for sometime
 			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AAmmoPickup::TurnOffIndicator, IndicatorLifeSpan, true);
 		}
@@ -76,6 +78,8 @@ void AAmmoPickup::TurnOffIndicator()
 {
 	// Turn of indicator
 	PlayerReference->CurrentWeapon->bDisplayAmmoFull = false;
+
+	PlayerReference->Indicator = 0;
 
 	Super::TurnOffIndicator();
 

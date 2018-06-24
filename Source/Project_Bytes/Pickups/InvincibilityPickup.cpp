@@ -55,6 +55,8 @@ void AInvincibilityPickup::ProcessPickupEvent(AExterminatorMannequin * Player, U
 			// Inventory full
 			PlayerReference->bInvincibilityPickupFull = true;
 
+			PlayerReference->Indicator = 3;
+
 			// Display indicator for sometime
 			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AInvincibilityPickup::TurnOffIndicator, IndicatorLifeSpan, true);
 		}
@@ -67,6 +69,8 @@ void AInvincibilityPickup::TurnOffIndicator()
 {
 	// Turn of indicator
 	PlayerReference->bInvincibilityPickupFull = false;
+
+	PlayerReference->Indicator = 0;
 	
 	Super::TurnOffIndicator();
 

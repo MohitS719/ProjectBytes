@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Public/TimerManager.h"
+#include "../Classes/Sound/SoundBase.h"
 #include "ExterminatorMannequin.generated.h"
 
 
@@ -17,6 +18,20 @@ class PROJECT_BYTES_API AExterminatorMannequin : public ACharacter
 													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
 													************************************************************************/
 	GENERATED_BODY()
+
+public:
+
+	// Common indicator
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	int Indicator = 0;
+
+private:
+
+	// Timer Handle for Health full indicator
+	FTimerHandle HealthIndicatorTimerHandle;
+
+	UFUNCTION()
+	void TurnOffIndicator();
 
 public:
 	
@@ -365,4 +380,52 @@ private:
 													************************************************************************/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+													/************************************************************************
+													*						SOUND RELATED LOGIC START						*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+	
+public:												
+	// Foot step sounds for grass
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *LeftGrassFootStep;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *RightGrassFootStep;
+
+	// Foot step sounds for brick
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *LeftBrickFootStep;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *RightBrickFootStep;
+
+	// Sound for sprinting
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *SprintingSound;
+
+	// Sound for grunting
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *GruntingSound;
+
+	// Sound for dying
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *DyingSound;
+
+	// Sound for weapon switching
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *WeaponSwitching;
+	
+	// Sound for weapon Reloading
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *WeaponReloading;
+
+
+													/************************************************************************
+													*						SOUND RELATED LOGIC END							*
+													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*
+													************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 };

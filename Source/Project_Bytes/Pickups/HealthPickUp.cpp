@@ -59,6 +59,8 @@ void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBa
 			// Inventory full
 			PlayerReference->bDisplayHealthFull = true;
 
+			PlayerReference->Indicator = 4;
+
 			// Display indicator for sometime
 			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AHealthPickUp::TurnOffIndicator, IndicatorLifeSpan, true);
 		}
@@ -76,6 +78,8 @@ void AHealthPickUp::TurnOffIndicator()
 {
 	// Turn of indicator
 	PlayerReference->bDisplayHealthFull = false;
+
+	PlayerReference->Indicator = 0;
 
 	Super::TurnOffIndicator();
 

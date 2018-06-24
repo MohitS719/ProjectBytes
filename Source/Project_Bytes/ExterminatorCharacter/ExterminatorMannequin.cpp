@@ -217,7 +217,7 @@ void AExterminatorMannequin::GoToSprint()
 		bSprinting = true;
 
 		// Depleting Stamina by 1 per second
-		GetWorldTimerManager().SetTimer(StaminaDepleteTimerHandle, this, &AExterminatorMannequin::DepleteStamina, 0.1f, true);
+		GetWorldTimerManager().SetTimer(StaminaDepleteTimerHandle, this, &AExterminatorMannequin::DepleteStamina, 0.05f, true);
 	}
 	else				// Not able to sprint. Out of breath
 	{
@@ -246,7 +246,7 @@ void AExterminatorMannequin::GoToWalk()
 	if (Stamina < MaxStamina)
 	{
 		// Regenerate Stamina by 1 per second
-		GetWorldTimerManager().SetTimer(StaminaRegenerateTimerHandle, this, &AExterminatorMannequin::RegenerateStamina, 0.1f, true);
+		GetWorldTimerManager().SetTimer(StaminaRegenerateTimerHandle, this, &AExterminatorMannequin::RegenerateStamina, 0.05f, true);
 	}
 
 	return;
@@ -304,7 +304,7 @@ void AExterminatorMannequin::RegenerateStamina()
 	if (Stamina < MaxStamina)
 	{
 		// Regenerate stamina
-		Stamina += 0.1f;
+		Stamina += 0.05f;
 	}
 	// Stamina full. Turn off regeneration.
 	else if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
@@ -325,7 +325,7 @@ void AExterminatorMannequin::DepleteStamina()
 	if (Stamina > 0.0)
 	{
 		// Deplete stamina
-		Stamina -= 0.1;
+		Stamina -= 0.05f;
 	}
 	// Player is exhausted.
 	else
@@ -515,6 +515,12 @@ bool AExterminatorMannequin::PickUpInvincibility()
 	}
 	else
 	{
+		// Display indicator
+		Indicator = 3;
+
+		// Display indicator for sometime
+		GetWorldTimerManager().SetTimer(HealthIndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+
 		// No.
 		return false;
 	}
@@ -531,6 +537,14 @@ void AExterminatorMannequin::MakeInvincible()
 
 		// Set time limit to invincibility
 		GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &AExterminatorMannequin::MakeMortal, InvincibleTimer, true);
+	}
+	else
+	{
+		// Setting indicator
+		Indicator = 5;
+
+		// Display indicator for sometime
+		GetWorldTimerManager().SetTimer(HealthIndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
 	}
 	
 	return;
@@ -592,6 +606,13 @@ void AExterminatorMannequin::Heal()
 			bDisplayHealthFull = true;
 		}
 	}
+	else
+	{
+		Indicator = 1;
+
+		// Display indicator for sometime
+		GetWorldTimerManager().SetTimer(HealthIndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+	}
 
 	return;
 }
@@ -608,6 +629,21 @@ bool AExterminatorMannequin::PickupHealth()
 	}
 
 	return false;
+}
+
+void AExterminatorMannequin::TurnOffIndicator()
+{
+	// Checking if timer is on
+	if (GetWorldTimerManager().IsTimerActive(HealthIndicatorTimerHandle))
+	{
+		// Resetting indicator
+		Indicator = 0;
+
+		// Clear timer 
+		GetWorldTimerManager().ClearTimer(HealthIndicatorTimerHandle);
+	}
+
+	return;
 }
 
 													/************************************************************************

@@ -24,19 +24,15 @@ public:
 
 	// Process Pickup event
 	UFUNCTION(BlueprintCallable, Category = "Health Pickup Details")
-	void ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed);
+	void ProcessPickupEvent(AExterminatorMannequin * Player) override;
 
 private:
-
-	// Player Reference
-	AExterminatorMannequin * PlayerReference;
-
-	// Turn off Indicator Display
-	UFUNCTION()
-	void TurnOffIndicator();
 
 	// Destroy Actor when life span expires
 	UFUNCTION()
 	void DestroyActor();
-	
+
+	// Turn off Indicator Display
+	UFUNCTION()
+	void TurnOffIndicator() override;
 };

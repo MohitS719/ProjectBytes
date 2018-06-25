@@ -31,7 +31,7 @@ void AHealthPickUp::Tick(float DeltaTime)
 	Performs pickup checks and calls appropriate increase function
 */
 
-void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed)
+void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player)
 {
 	// Mandatory null pointer check
 	if (Player && SoundSuccess && SoundFailed)
@@ -52,13 +52,12 @@ void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBa
 		else
 		{
 			// Failure to pickup
+			Super::ProcessPickupEvent(Player);
 
 			// Play failure sound
 			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
 
-			// Inventory full
-			PlayerReference->bDisplayHealthFull = true;
-
+			// Display indicator
 			PlayerReference->Indicator = 4;
 
 			// Display indicator for sometime
@@ -76,11 +75,6 @@ void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBa
 
 void AHealthPickUp::TurnOffIndicator()
 {
-	// Turn of indicator
-	PlayerReference->bDisplayHealthFull = false;
-
-	PlayerReference->Indicator = 0;
-
 	Super::TurnOffIndicator();
 
 	return;

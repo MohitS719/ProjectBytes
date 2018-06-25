@@ -31,7 +31,7 @@ void AAmmoPickup::Tick(float DeltaTime)
 	Performs pickup checks and calls appropriate increase function
 */
 
-void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed)
+void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player)
 {
 	// Mandatory null pointer check
 	if (Player && SoundSuccess && SoundFailed)
@@ -52,13 +52,12 @@ void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase
 		else
 		{
 			// Failure to pickup
+			Super::ProcessPickupEvent(Player);
 
 			// Play failure sound
 			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
 
-			// Inventory full
-			PlayerReference->CurrentWeapon->bDisplayAmmoFull = true;
-
+			// Display indicator
 			PlayerReference->Indicator = 2;
 
 			// Display indicator for sometime
@@ -76,11 +75,6 @@ void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase
 
 void AAmmoPickup::TurnOffIndicator()
 {
-	// Turn of indicator
-	PlayerReference->CurrentWeapon->bDisplayAmmoFull = false;
-
-	PlayerReference->Indicator = 0;
-
 	Super::TurnOffIndicator();
 
 	return;

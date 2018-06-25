@@ -22,9 +22,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
 	// Destroy Actor when life span expires
 	UFUNCTION()
 	void DestroyActor() override;
-	
-	
 };

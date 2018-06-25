@@ -26,6 +26,50 @@ void AOneShotKill::Tick(float DeltaTime)
 
 }
 
+void AOneShotKill::ProcessPickupEvent(AExterminatorMannequin * Player)
+{
+	// Mandatory null pointer check
+	if (Player && SoundSuccess && SoundFailed)
+	{
+		PlayerReference = Player;
+
+		// Try To Increase Health
+		if (PlayerReference->PickupOneHitKill())
+		{
+			// Successful
+
+			// Play success sound
+			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundSuccess, PlayerReference->GetActorLocation());
+
+			// Destroy actor because pickup has been picked up
+			DestroyActor();
+		}
+		else
+		{
+			// Failure to pickup
+			Super::ProcessPickupEvent(Player);
+
+			// Play failure sound
+			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
+
+			// Turn on indicator
+			PlayerReference->Indicator = 7;
+
+			// Display indicator for sometime
+			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AOneShotKill::TurnOffIndicator, IndicatorLifeSpan, true);
+		}
+	}
+
+	return;
+}
+
+void AOneShotKill::TurnOffIndicator()
+{
+	Super::TurnOffIndicator();
+
+	return;
+}
+
 void AOneShotKill::DestroyActor()
 {
 

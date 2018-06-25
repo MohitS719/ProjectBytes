@@ -28,7 +28,7 @@ public:
 private:
 
 	// Timer Handle for Health full indicator
-	FTimerHandle HealthIndicatorTimerHandle;
+	FTimerHandle IndicatorTimerHandle;
 
 	UFUNCTION()
 	void TurnOffIndicator();
@@ -306,10 +306,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	bool bInvincibility = false;
 
-	// Is Player Invincibility pick up full?
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Pickup Details")
-	bool bInvincibilityPickupFull = false;
-
 	// Invincibility pickup count
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character pickup Details")
 	int InvincibilityPickups = 0;
@@ -321,7 +317,6 @@ public:
 	// Invincibility pickup max count
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character pickup Details")
 	float InvincibleTimer = 10.0f;
-
 
 	// Player picks up invincibility
 	bool PickUpInvincibility();
@@ -344,9 +339,13 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character pickup Details")
 	int OneHitKillAmmo = 0;
 
+	// Max Instant kill Ammo count
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character pickup Details")
+	int MaxOneHitKillAmmo = 10;
+
 	// Increase One Kill Ammo
 	UFUNCTION(BlueprintCallable, Category = "Pickup Details")
-	void IncreaseOneHitKillAmmo(int Amount);
+	bool PickupOneHitKill();
 
 													/** Health pickup portion */
 
@@ -363,10 +362,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Character Pickup Details")
 	bool PickupHealth();
 
-	// Display player health full
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
-	bool bDisplayHealthFull = false;
-
 	// Max number of med packs
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
 	float HealAmount = 25.0f;
@@ -374,6 +369,21 @@ public:
 private:
 	// Heal Player, returns successful healing or not
 	void Heal();
+
+														/** Keycard pickup portion */
+
+public:
+	// Number of keycards
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Pickup Details")
+	int KeyCards = 0;
+
+	// Max Number of keycards that can be held
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Pickup Details")
+	int MaxKeyCards = 5;
+
+	// Pickup keycards
+	bool PickupKeycard();
+
 													/************************************************************************
 													*						PICKUP RELATED LOGIC END						*
 													*				MEMBER FUNCTIONS AND MEMBER VARIABLES					*

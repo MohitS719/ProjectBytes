@@ -27,7 +27,7 @@ void AInvincibilityPickup::Tick(float DeltaTime)
 
 }
 
-void AInvincibilityPickup::ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed)
+void AInvincibilityPickup::ProcessPickupEvent(AExterminatorMannequin * Player)
 {
 	// Mandatory null pointer check
 	if (Player && SoundSuccess && SoundFailed)
@@ -48,13 +48,12 @@ void AInvincibilityPickup::ProcessPickupEvent(AExterminatorMannequin * Player, U
 		else
 		{
 			// Failure to pickup
+			Super::ProcessPickupEvent(Player);
 
 			// Play failure sound
 			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
 
-			// Inventory full
-			PlayerReference->bInvincibilityPickupFull = true;
-
+			// Turn on indicator
 			PlayerReference->Indicator = 3;
 
 			// Display indicator for sometime
@@ -67,11 +66,6 @@ void AInvincibilityPickup::ProcessPickupEvent(AExterminatorMannequin * Player, U
 
 void AInvincibilityPickup::TurnOffIndicator()
 {
-	// Turn of indicator
-	PlayerReference->bInvincibilityPickupFull = false;
-
-	PlayerReference->Indicator = 0;
-	
 	Super::TurnOffIndicator();
 
 	return;

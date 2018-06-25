@@ -19,7 +19,7 @@ public:
 
 	// Process Pickup event
 	UFUNCTION(BlueprintCallable, Category = "Ammo Pickup Details")
-	void ProcessPickupEvent(AExterminatorMannequin * Player, USoundBase *SoundSuccess, USoundBase *SoundFailed);
+	void ProcessPickupEvent(AExterminatorMannequin * Player) override;
 
 protected:
 
@@ -28,12 +28,11 @@ protected:
 
 private:
 
-	// Turn off Indicator Display
-	UFUNCTION()
-	void TurnOffIndicator() override;
-
 	// Destroy Actor when life span expires
 	UFUNCTION()
 	void DestroyActor() override;
 
+	// Turn off Indicator Display
+	UFUNCTION()
+	void TurnOffIndicator() override;
 };

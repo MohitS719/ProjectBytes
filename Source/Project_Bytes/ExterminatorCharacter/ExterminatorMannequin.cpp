@@ -513,17 +513,8 @@ bool AExterminatorMannequin::PickUpInvincibility()
 		++InvincibilityPickups;
 		return true;
 	}
-	else
-	{
-		// Display indicator
-		Indicator = 3;
-
-		// Display indicator for sometime
-		GetWorldTimerManager().SetTimer(HealthIndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
-
-		// No.
-		return false;
-	}
+	
+	return false;
 }
 
 // Makes player invincible. Meaning he can't take damage.
@@ -544,7 +535,7 @@ void AExterminatorMannequin::MakeInvincible()
 		Indicator = 5;
 
 		// Display indicator for sometime
-		GetWorldTimerManager().SetTimer(HealthIndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+		GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
 	}
 	
 	return;
@@ -569,11 +560,22 @@ void AExterminatorMannequin::MakeMortal()
 }
 
 // Increases One hit kill ammo
-void AExterminatorMannequin::IncreaseOneHitKillAmmo(int Amount)
+bool AExterminatorMannequin::PickupOneHitKill()
 {
-	OneHitKillAmmo += Amount;
+	if (OneHitKillAmmo < MaxOneHitKillAmmo)
+	{
+		OneHitKillAmmo += 5;
 
-	return;
+		// Boundary checking
+		if (OneHitKillAmmo > MaxOneHitKillAmmo)
+		{
+			OneHitKillAmmo = MaxOneHitKillAmmo;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 // Heals player. Regenerates health by Amount.
@@ -596,14 +598,11 @@ void AExterminatorMannequin::Heal()
 			{
 				Health = MaxHealth;
 			}
-
-			// Turn off display health full indicator
-			bDisplayHealthFull = false;
 		}
 		else
 		{
 			// Health full. Turn on display health full indicator
-			bDisplayHealthFull = true;
+			Indicator = 1;
 		}
 	}
 	else
@@ -611,10 +610,23 @@ void AExterminatorMannequin::Heal()
 		Indicator = 1;
 
 		// Display indicator for sometime
-		GetWorldTimerManager().SetTimer(HealthIndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+		GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
 	}
 
 	return;
+}
+
+// Pick up a key card
+bool AExterminatorMannequin::PickupKeycard()
+{
+	if (KeyCards < MaxKeyCards)
+	{
+		++KeyCards;
+
+		return true;
+	}
+
+	return false;
 }
 
 // Pick up a health pickup or health restoration item
@@ -634,13 +646,13 @@ bool AExterminatorMannequin::PickupHealth()
 void AExterminatorMannequin::TurnOffIndicator()
 {
 	// Checking if timer is on
-	if (GetWorldTimerManager().IsTimerActive(HealthIndicatorTimerHandle))
+	if (GetWorldTimerManager().IsTimerActive(IndicatorTimerHandle))
 	{
 		// Resetting indicator
 		Indicator = 0;
 
 		// Clear timer 
-		GetWorldTimerManager().ClearTimer(HealthIndicatorTimerHandle);
+		GetWorldTimerManager().ClearTimer(IndicatorTimerHandle);
 	}
 
 	return;

@@ -34,10 +34,20 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Details")
 	float IndicatorLifeSpan = 2.0f;
 
+	// Sounds for the picup
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
+	USoundBase * SoundSuccess; 
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
+	USoundBase * SoundFailed;
+
 protected:
 
 	// Player Reference
 	AExterminatorMannequin * PlayerReference;
+
+	// Process pickup event
+	virtual void ProcessPickupEvent(AExterminatorMannequin * Player);
 
 	// Destroy Actor when life span expires
 	virtual void DestroyActor();

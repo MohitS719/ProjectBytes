@@ -25,6 +25,50 @@ void AKeyCard::Tick(float DeltaTime)
 
 }
 
+void AKeyCard::ProcessPickupEvent(AExterminatorMannequin * Player)
+{
+	// Mandatory null pointer check
+	if (Player && SoundSuccess && SoundFailed)
+	{
+		PlayerReference = Player;
+
+		// Try To Increase Health
+		if (PlayerReference->PickupKeycard())
+		{
+			// Successful
+
+			// Play success sound
+			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundSuccess, PlayerReference->GetActorLocation());
+
+			// Destroy actor because pickup has been picked up
+			DestroyActor();
+		}
+		else
+		{
+			// Failure
+			Super::ProcessPickupEvent(Player);
+
+			// Display indicator for sometime
+			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AKeyCard::TurnOffIndicator, IndicatorLifeSpan, true);
+
+			// Turn on indicator
+			PlayerReference->Indicator = 6;
+
+			// Play failure sound
+			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
+		}
+	}
+
+	return;
+}
+
+void AKeyCard::TurnOffIndicator()
+{
+	Super::TurnOffIndicator();
+
+	return;
+}
+
 void AKeyCard::DestroyActor()
 {
 
@@ -39,6 +83,4 @@ void AKeyCard::DestroyActor()
 
 	return;
 }
-
-
 

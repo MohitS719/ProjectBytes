@@ -22,9 +22,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Process Pickup event
+	UFUNCTION(BlueprintCallable, Category = "Keycard Pickup Details")
+	void ProcessPickupEvent(AExterminatorMannequin * Player) override;
+
+private:
 	// Destroy Actor when life span expires
 	UFUNCTION()
 	void DestroyActor() override;
 	
-	
+	// Turn off Indicator Display
+	UFUNCTION()
+	void TurnOffIndicator() override;
 };

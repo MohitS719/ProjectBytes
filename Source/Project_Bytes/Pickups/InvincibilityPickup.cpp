@@ -30,43 +30,15 @@ void AInvincibilityPickup::Tick(float DeltaTime)
 void AInvincibilityPickup::ProcessPickupEvent(AExterminatorMannequin * Player)
 {
 	// Mandatory null pointer check
-	if (Player && SoundSuccess && SoundFailed)
+	if (Player)
 	{
-		PlayerReference = Player;
-
 		// Try To make player invincible
-		if (PlayerReference->PickUpInvincibility())
+		if (Player->PickUpInvincibility())
 		{
-			// Successful
-
-			// Play success sound
-			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundSuccess, PlayerReference->GetActorLocation());
-
 			// Destroy actor because pickup has been picked up
 			DestroyActor();
 		}
-		else
-		{
-			// Failure to pickup
-			Super::ProcessPickupEvent(Player);
-
-			// Play failure sound
-			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
-
-			// Turn on indicator
-			PlayerReference->Indicator = 3;
-
-			// Display indicator for sometime
-			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AInvincibilityPickup::TurnOffIndicator, IndicatorLifeSpan, true);
-		}
 	}
-
-	return;
-}
-
-void AInvincibilityPickup::TurnOffIndicator()
-{
-	Super::TurnOffIndicator();
 
 	return;
 }

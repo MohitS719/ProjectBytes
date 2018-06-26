@@ -28,35 +28,14 @@ public:
 
 	// Life Span. How long is the pick up going to remain in the world?
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Details")
-	float LifeSpan = 10.0f;
-
-	// Indicator life span. How long is the indicator going to remain active?
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Details")
-	float IndicatorLifeSpan = 2.0f;
-
-	// Sounds for the picup
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
-	USoundBase * SoundSuccess; 
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
-	USoundBase * SoundFailed;
+	float LifeSpan = 60.0f;
 
 protected:
-
-	// Player Reference
-	AExterminatorMannequin * PlayerReference;
-
 	// Process pickup event
 	virtual void ProcessPickupEvent(AExterminatorMannequin * Player);
 
 	// Destroy Actor when life span expires
 	virtual void DestroyActor();
-
-	// Turn off Indicator Display
-	virtual void TurnOffIndicator();
-
-	// Timer Handle for Health full indicator
-	FTimerHandle IndicatorTimerHandle;
 
 	// Life span of pickup
 	FTimerHandle LifeSpanTimerHandle;

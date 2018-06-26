@@ -1,15 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ExterminatorMannequin.h"
-#include "Project_Bytes.h"
-#include "../Gun.h"
-#include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "Components/InputComponent.h"
-#include "GameFramework/InputSettings.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Public/TimerManager.h"
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,6 +208,9 @@ void AExterminatorMannequin::GoToSprint()
 		// Set sprinting state to true
 		bSprinting = true;
 
+		// Play sound
+		UGameplayStatics::PlaySoundAtLocation(this, SprintingSound, GetActorLocation());
+
 		// Depleting Stamina by 1 per second
 		GetWorldTimerManager().SetTimer(StaminaDepleteTimerHandle, this, &AExterminatorMannequin::DepleteStamina, 0.05f, true);
 	}
@@ -281,6 +276,9 @@ bool AExterminatorMannequin::TakeDamage(float Amount)
 			// Turning on display Damage Indicator
 			bTakingDamage = true;	
 
+			// Play sound
+			UGameplayStatics::PlaySoundAtLocation(this, GruntingSound, GetActorLocation());
+
 			// Boundary Check
 			if (Health <= 0.0)		
 			{
@@ -289,6 +287,17 @@ bool AExterminatorMannequin::TakeDamage(float Amount)
 
 				// Killed player
 				bIsDead = true;		
+			}
+			else if (Health <= 20)
+			{
+				// Play sound
+				UGameplayStatics::PlaySoundAtLocation(this, SoundLowHealth, GetActorLocation());
+
+				// Display low health
+				Indicator = 11;
+
+				// Display indicator for sometime
+				GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
 			}
 		}
 	}
@@ -406,6 +415,17 @@ void AExterminatorMannequin::SetReload()
 	{
 		// Set reload state to true
 		bReloading = true;
+
+		// Play sound
+		UGameplayStatics::PlaySoundAtLocation(this, WeaponReloading, GetActorLocation());
+	}
+	else if (CurrentWeapon->Ammo == 0)
+	{
+		// No ammo to reload
+		Indicator = 10;
+
+		// Display indicator for sometime
+		GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
 	}
 
 	return;
@@ -439,10 +459,15 @@ void AExterminatorMannequin::ChangeWeapon()
 {
 	// Detach from hand.
 	CurrentWeapon->DetachRootComponentFromParent();
+	
 	// Attach weapon to the back.
 	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("shotgun_clip"));
+	
 	// Correctly position the weapon on the back so it doesn't stick out.
 	CurrentWeapon->SetActorRelativeRotation(RotateWeaponSwapped);
+
+	// Play sound
+	UGameplayStatics::PlaySoundAtLocation(this, WeaponSwitching, GetActorLocation());
 
 	// Is Pistol suppose to be the current weapon?
 	if (IsPistol)
@@ -511,10 +536,23 @@ bool AExterminatorMannequin::PickUpInvincibility()
 	{
 		// Yes.
 		++InvincibilityPickups;
+
+		// Play success sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupSuccess, GetActorLocation());
+
 		return true;
 	}
+	else
+	{
+		// Play failure sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
+
+		// Set indicator
+		TurnOnIndicator(3, 2.0f);
+		
+		return false;
+	}
 	
-	return false;
 }
 
 // Makes player invincible. Meaning he can't take damage.
@@ -522,20 +560,33 @@ void AExterminatorMannequin::MakeInvincible()
 {
 	if (!bInvincibility)
 	{
-		bInvincibility = true;
+		if (InvincibilityPickups)
+		{
+			// Become invincible
+			bInvincibility = true;
 
-		InvincibilityPickups--;
+			// Decrease Invincibility pickup
+			InvincibilityPickups--;
 
-		// Set time limit to invincibility
-		GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &AExterminatorMannequin::MakeMortal, InvincibleTimer, true);
+			// Set time limit to invincibility
+			GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &AExterminatorMannequin::MakeMortal, InvincibleTimer, true);
+		}
+		else
+		{
+			// No invincibility pickups
+			TurnOnIndicator(9, 2.0f);
+
+			// Failed sound
+			UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
+		}
 	}
 	else
 	{
-		// Setting indicator
-		Indicator = 5;
+		// Already invincible
+		TurnOnIndicator(5, 2.0f);
 
-		// Display indicator for sometime
-		GetWorldTimerManager().SetTimer(InvincibleTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+		// Failed sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
 	}
 	
 	return;
@@ -564,6 +615,7 @@ bool AExterminatorMannequin::PickupOneHitKill()
 {
 	if (OneHitKillAmmo < MaxOneHitKillAmmo)
 	{
+		// Increase on hit kill ammo
 		OneHitKillAmmo += 5;
 
 		// Boundary checking
@@ -572,7 +624,18 @@ bool AExterminatorMannequin::PickupOneHitKill()
 			OneHitKillAmmo = MaxOneHitKillAmmo;
 		}
 
+		// Play success sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupSuccess, GetActorLocation());
+
 		return true;
+	}
+	else
+	{
+		// Play failure sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
+
+		// One hit kill full
+		TurnOnIndicator(7, 2.0f);
 	}
 
 	return false;
@@ -598,19 +661,26 @@ void AExterminatorMannequin::Heal()
 			{
 				Health = MaxHealth;
 			}
+
+			// Healing sound
+			UGameplayStatics::PlaySoundAtLocation(this, SoundHeal, GetActorLocation());
 		}
 		else
 		{
 			// Health full. Turn on display health full indicator
-			Indicator = 1;
+			TurnOnIndicator(1, 2.0f);
+
+			// Failed sound
+			UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
 		}
 	}
 	else
 	{
-		Indicator = 1;
+		// Empty health pickup
+		TurnOnIndicator(8, 2.0);
 
-		// Display indicator for sometime
-		GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+		// Failed sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
 	}
 
 	return;
@@ -621,12 +691,43 @@ bool AExterminatorMannequin::PickupKeycard()
 {
 	if (KeyCards < MaxKeyCards)
 	{
+		// Play success sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupSuccess, GetActorLocation());
+
+		// Increase key cards
 		++KeyCards;
 
 		return true;
 	}
+	else
+	{
+		// Key card full
+		TurnOnIndicator(6, 2.0f);
 
-	return false;
+		// Play failure sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
+
+		return false;
+	}
+
+}
+
+bool AExterminatorMannequin::UseKeycard()
+{
+	if (KeyCards > 0)
+	{
+		// Use key card
+		--KeyCards;
+
+		return true;
+	}
+	else
+	{
+		// Display indicator no keycard
+		TurnOnIndicator(12, 2.0f);
+
+		return false;
+	}
 }
 
 // Pick up a health pickup or health restoration item
@@ -635,14 +736,38 @@ bool AExterminatorMannequin::PickupHealth()
 	// Can the player pick up?
 	if (HealthPickups < MaxHealthPickups)
 	{
+		// Increase Health pickups
 		++HealthPickups;
 
+		// Play success sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupSuccess, GetActorLocation());
+
 		return true;
+	}
+	else
+	{
+		// Play failure sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
+
+		// Health pickups full
+		TurnOnIndicator(4, 2.0f);
 	}
 
 	return false;
 }
 
+void AExterminatorMannequin::TurnOnIndicator(int Value, float Span)
+{
+	// Health pickups full
+	Indicator = Value;
+
+	// Display indicator for sometime
+	GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, Span, true);
+
+	return;
+}
+
+// Turns of indicator
 void AExterminatorMannequin::TurnOffIndicator()
 {
 	// Checking if timer is on

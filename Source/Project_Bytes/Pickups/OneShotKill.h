@@ -30,8 +30,4 @@ private:
 	// Destroy Actor when life span expires
 	UFUNCTION()
 	void DestroyActor() override;
-	
-	// Turn off Indicator Display
-	UFUNCTION()
-	void TurnOffIndicator() override;
 };

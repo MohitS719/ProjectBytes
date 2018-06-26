@@ -2,17 +2,12 @@
 
 
 #include "Gun.h"
-#include "Project_BytesProjectile.h"
-#include "Animation/AnimInstance.h"
-#include "Kismet/GameplayStatics.h"
-
-
 
 // Sets default values
 AGun::AGun()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Create a gun mesh component
 	FP_Gun = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FP_Gun"));
@@ -115,6 +110,10 @@ bool AGun::IncreaseAmmo(int Amount)
 {
 	if (Ammo < MaxAmmo)		// Checking whether ammo can be taken
 	{
+		// Success
+		// Play success sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupSuccess, GetActorLocation());
+
 		Ammo += Amount;		// Ammo Taken
 
 		if (Ammo > MaxAmmo)	// Boundary check
@@ -128,8 +127,9 @@ bool AGun::IncreaseAmmo(int Amount)
 	}
 	else
 	{
-		bDisplayAmmoFull = true;	// Show player ammo full
+		// Play failure sound
+		UGameplayStatics::PlaySoundAtLocation(this, SoundPickupFailed, GetActorLocation());
+		
+		return false;			// Pick up failed
 	}
-
-	return false;			// Pick up failed
 }

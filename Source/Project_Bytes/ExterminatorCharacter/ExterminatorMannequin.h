@@ -6,6 +6,16 @@
 #include "GameFramework/Character.h"
 #include "Public/TimerManager.h"
 #include "../Classes/Sound/SoundBase.h"
+#include "Project_Bytes.h"
+#include "../Gun.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/InputComponent.h"
+#include "GameFramework/InputSettings.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Public/TimerManager.h"
+#include "Classes/Kismet/GameplayStatics.h"
 #include "ExterminatorMannequin.generated.h"
 
 
@@ -24,6 +34,9 @@ public:
 	// Common indicator
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	int Indicator = 0;
+
+	UFUNCTION()
+	void TurnOnIndicator(int Value, float Span);
 
 private:
 
@@ -374,15 +387,19 @@ private:
 
 public:
 	// Number of keycards
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Pickup Details")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
 	int KeyCards = 0;
 
 	// Max Number of keycards that can be held
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Pickup Details")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Pickup Details")
 	int MaxKeyCards = 5;
 
 	// Pickup keycards
 	bool PickupKeycard();
+
+	// Decrease Keycards
+	UFUNCTION(BlueprintCallable, Category = "Character Pickup Details")
+	bool UseKeycard();
 
 													/************************************************************************
 													*						PICKUP RELATED LOGIC END						*
@@ -431,6 +448,24 @@ public:
 	// Sound for weapon Reloading
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
 	USoundBase *WeaponReloading;
+
+	// Sound for weapon Reloading
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *SoundLowHealth;
+
+	// Sound for weapon Reloading
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase *SoundWaveBegin;
+
+	// Sounds for the pickup
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
+	USoundBase * SoundPickupSuccess;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
+	USoundBase * SoundPickupFailed;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Sound Details")
+	USoundBase * SoundHeal;
 
 
 													/************************************************************************

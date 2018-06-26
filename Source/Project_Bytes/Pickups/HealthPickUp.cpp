@@ -34,34 +34,13 @@ void AHealthPickUp::Tick(float DeltaTime)
 void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player)
 {
 	// Mandatory null pointer check
-	if (Player && SoundSuccess && SoundFailed)
+	if (Player)
 	{
-		PlayerReference = Player;
-
 		// Try To Increase Health
-		if (PlayerReference->PickupHealth())
+		if (Player->PickupHealth())
 		{
-			// Successful
-
-			// Play success sound
-			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundSuccess, PlayerReference->GetActorLocation());
-
 			// Destroy actor because pickup has been picked up
 			DestroyActor();
-		}
-		else
-		{
-			// Failure to pickup
-			Super::ProcessPickupEvent(Player);
-
-			// Play failure sound
-			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
-
-			// Display indicator
-			PlayerReference->Indicator = 4;
-
-			// Display indicator for sometime
-			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AHealthPickUp::TurnOffIndicator, IndicatorLifeSpan, true);
 		}
 	}
 
@@ -72,13 +51,6 @@ void AHealthPickUp::ProcessPickupEvent(AExterminatorMannequin * Player)
 	Private function for handling deactivation of indicators and
 	Destruction of actor
 */
-
-void AHealthPickUp::TurnOffIndicator()
-{
-	Super::TurnOffIndicator();
-
-	return;
-}
 
 void AHealthPickUp::DestroyActor()
 {

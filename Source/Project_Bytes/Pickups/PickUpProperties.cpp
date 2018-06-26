@@ -39,24 +39,8 @@ void APickUpProperties::DestroyActor()
 	return;
 }
 
-void APickUpProperties::TurnOffIndicator()
-{
-	// Checking if timer is on
-	if (GetWorldTimerManager().IsTimerActive(IndicatorTimerHandle))
-	{
-		// Clear indicator
-		PlayerReference->Indicator = 0;
-
-		// Clear timer 
-		GetWorldTimerManager().ClearTimer(IndicatorTimerHandle);
-	}
-
-	return;
-}
 
 void APickUpProperties::ProcessPickupEvent(AExterminatorMannequin * Player)
 {
-	TurnOffIndicator();
-	
 	return;
 }

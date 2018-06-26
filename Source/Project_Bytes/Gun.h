@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Project_BytesProjectile.h"
+#include "Animation/AnimInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "Gun.generated.h"
 
 UCLASS()
@@ -83,6 +86,13 @@ public:
 	/** Particle Effect to spawn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	UParticleSystem* ParticleEffect;
+
+	// Sounds for the pickup
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
+	USoundBase * SoundPickupSuccess;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Sound Details")
+	USoundBase * SoundPickupFailed;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)

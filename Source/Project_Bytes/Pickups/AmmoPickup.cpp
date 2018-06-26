@@ -34,17 +34,12 @@ void AAmmoPickup::Tick(float DeltaTime)
 void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player)
 {
 	// Mandatory null pointer check
-	if (Player && SoundSuccess && SoundFailed)
+	if (Player)
 	{
-		PlayerReference = Player;
-
 		// Try To Increase Ammo
-		if (PlayerReference->CurrentWeapon->IncreaseAmmo(10))	
+		if (Player->CurrentWeapon->IncreaseAmmo(10))	
 		{
 			// Successful
-
-			// Play success sound
-			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundSuccess, PlayerReference->GetActorLocation());
 
 			// Destroy actor because pickup has been picked up
 			DestroyActor();
@@ -54,14 +49,8 @@ void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player)
 			// Failure to pickup
 			Super::ProcessPickupEvent(Player);
 
-			// Play failure sound
-			UGameplayStatics::PlaySoundAtLocation(PlayerReference, SoundFailed, PlayerReference->GetActorLocation());
-
 			// Display indicator
-			PlayerReference->Indicator = 2;
-
-			// Display indicator for sometime
-			GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AAmmoPickup::TurnOffIndicator, IndicatorLifeSpan, true);
+			Player->TurnOnIndicator(2, 2.0f);
 		}
 	}
 
@@ -73,12 +62,6 @@ void AAmmoPickup::ProcessPickupEvent(AExterminatorMannequin * Player)
 	Destruction of actor
 */
 
-void AAmmoPickup::TurnOffIndicator()
-{
-	Super::TurnOffIndicator();
-
-	return;
-}
 
 void AAmmoPickup::DestroyActor()
 {

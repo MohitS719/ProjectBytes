@@ -193,7 +193,7 @@ void AExterminatorMannequin::LookUpAtRate(float Rate)
 void AExterminatorMannequin::GoToSprint()
 {
 	// Able to sprint. Can't sprint while reloading or aiming down sight
-	if (Stamina > 0 && !bReloading && !bAiming)	
+	if (Stamina > 0 && !bReloading && !bAiming && !Swapping)	
 	{
 		// Is Regeneration going on?
 		if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
@@ -410,22 +410,23 @@ void AExterminatorMannequin::Reload()
 // Initiates reloading. Actual relading logic at Gun.cpp
 void AExterminatorMannequin::SetReload()
 {
-	// Checking if there is ammo to reload and if the clip is empty
-	if ((CurrentWeapon->Ammo > 0) && (CurrentWeapon->ClipSize < CurrentWeapon->MaxClipSize))
+	// If not sprinting, aiming or swapping weapons then he can reload
+	if (!bSprinting && !bAiming && !Swapping)
 	{
-		// Set reload state to true
-		bReloading = true;
+		// Checking if there is ammo to reload and if the clip is empty
+		if ((CurrentWeapon->Ammo > 0) && (CurrentWeapon->ClipSize < CurrentWeapon->MaxClipSize))
+		{
+			// Set reload state to true
+			bReloading = true;
 
-		// Play sound
-		UGameplayStatics::PlaySoundAtLocation(this, WeaponReloading, GetActorLocation());
-	}
-	else if (CurrentWeapon->Ammo == 0)
-	{
-		// No ammo to reload
-		Indicator = 10;
-
-		// Display indicator for sometime
-		GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+			// Play sound
+			UGameplayStatics::PlaySoundAtLocation(this, WeaponReloading, GetActorLocation());
+		}
+		else if (CurrentWeapon->Ammo == 0)
+		{
+			// No ammo to reload
+			TurnOnIndicator(10, 2.0f);
+		}
 	}
 
 	return;
@@ -434,21 +435,25 @@ void AExterminatorMannequin::SetReload()
 // Initiates swapping or changing weapons. Actual changing logic is ChangeWeapon() function.
 void AExterminatorMannequin::ChangeWeaponInitiate()
 {
-	// Set player state to swapping weapons.
-	Swapping = true;
+	// If player isn't sprinting, aiming and reloading then he can change weapons
+	if (!bSprinting && !bAiming && !bReloading)
+	{
+		// Set player state to swapping weapons.
+		Swapping = true;
 
-	// Is Shotgun the current weapon?
-	if (IsShotgun)
-	{
-		// Then swap the shotgun for the pistol
-		IsShotgun = false;
-		IsPistol = true;
-	}
-	else
-	{
-		// Otherwise swap the pistol for the shotgun
-		IsShotgun = true;
-		IsPistol = false;
+		// Is Shotgun the current weapon?
+		if (IsShotgun)
+		{
+			// Then swap the shotgun for the pistol
+			IsShotgun = false;
+			IsPistol = true;
+		}
+		else
+		{
+			// Otherwise swap the pistol for the shotgun
+			IsShotgun = true;
+			IsPistol = false;
+		}
 	}
 
 	return;
@@ -558,8 +563,10 @@ bool AExterminatorMannequin::PickUpInvincibility()
 // Makes player invincible. Meaning he can't take damage.
 void AExterminatorMannequin::MakeInvincible()
 {
+	// If player isn't already invincible then he can become invincible
 	if (!bInvincibility)
 	{
+		// If player has invincibility pickups then he can become invincibile
 		if (InvincibilityPickups)
 		{
 			// Become invincible
@@ -595,8 +602,10 @@ void AExterminatorMannequin::MakeInvincible()
 // Makes player a mortal. Meaning he can take damage.
 void AExterminatorMannequin::MakeMortal()
 {
+	// If invincibility is on, then turn it on
 	if (bInvincibility)
 	{
+		// Turn off invincibility
 		bInvincibility = false;
 
 		// Checking if timer is on

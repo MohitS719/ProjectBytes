@@ -30,9 +30,8 @@ class PROJECT_BYTES_API AExterminatorMannequin : public ACharacter
 	GENERATED_BODY()
 
 public:
-
 	// Common indicator
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Details")
 	int Indicator = 0;
 
 	UFUNCTION()

@@ -72,6 +72,9 @@ bool AUpgradeMachine::HealthCapacityIncrease()
 			// Performing Upgrade
 			PlayerReference->MaxHealth += 10.0;
 
+			// Health ratio calculation
+			PlayerReference->HealthRatio = (PlayerReference->Health / PlayerReference->MaxHealth);
+
 			// Deduct Price
 			PlayerReference->Tokens -= HealthCapacityPrice;
 
@@ -104,6 +107,9 @@ bool AUpgradeMachine::RefillHealth()
 			// Performing Upgrade
 			PlayerReference->Health = PlayerReference->MaxHealth;
 
+			// Health ratio calculation
+			PlayerReference->HealthRatio = (PlayerReference->Health / PlayerReference->MaxHealth);
+
 			// Deduct Price
 			PlayerReference->Tokens -= RefillHealthPrice;
 
@@ -135,6 +141,9 @@ bool AUpgradeMachine::StaminaCapacityIncrease()
 		{
 			// Performing Upgrade
 			PlayerReference->MaxStamina += 2.0;
+
+			// Stamina ratio calculation
+			PlayerReference->StaminaRatio = (PlayerReference->Stamina / PlayerReference->MaxStamina);
 
 			// Deduct Price
 			PlayerReference->Tokens -= StaminaCapacityPrice;

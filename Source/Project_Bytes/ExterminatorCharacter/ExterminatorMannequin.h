@@ -154,6 +154,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	float MaxHealth = 100.0;
 
+	// Player health ratio for HUD
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	float HealthRatio = 1.0f;
+
 	// Damage player, return true if damaged
 	UFUNCTION(BlueprintCallable, Category = "Character Details")
 	bool TakeDamage(float Amount);
@@ -177,6 +181,10 @@ public:
 	// Player Max Stamina
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
 	float MaxStamina = 10;
+
+	// Player health ratio for HUD
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Character Details")
+	float StaminaRatio = 1.0f;
 
 private:
 
@@ -273,6 +281,13 @@ private:
 
 	// Attach weapon to hand
 	void AttachWeaponToGripPoint();
+
+private:
+	// Weapon fire rate handle
+	FTimerHandle FireRateHandle;
+
+	UFUNCTION()
+	void StopFiring();
 
 public:
 

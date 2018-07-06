@@ -83,6 +83,7 @@ void AExterminatorMannequin::BeginPlay()
 	if (InputComponent != nullptr)
 	{
 		InputComponent->BindAction("Fire", IE_Pressed, this, &AExterminatorMannequin::PullTrigger);
+		InputComponent->BindAction("Fire", IE_Released, this, &AExterminatorMannequin::StopFiring);
 	}
 }
 
@@ -294,11 +295,11 @@ bool AExterminatorMannequin::TakeDamage(float Amount)
 				UGameplayStatics::PlaySoundAtLocation(this, SoundLowHealth, GetActorLocation());
 
 				// Display low health
-				Indicator = 11;
-
-				// Display indicator for sometime
-				GetWorldTimerManager().SetTimer(IndicatorTimerHandle, this, &AExterminatorMannequin::TurnOffIndicator, 2.0f, true);
+				TurnOnIndicator(13, 5.0f);
 			}
+
+			// Calculate health ratio
+			HealthRatio = (Health / MaxHealth);
 		}
 	}
 
@@ -314,6 +315,9 @@ void AExterminatorMannequin::RegenerateStamina()
 	{
 		// Regenerate stamina
 		Stamina += 0.05f;
+
+		// Calculate Stamina Ratio
+		StaminaRatio = (Stamina / MaxStamina);
 	}
 	// Stamina full. Turn off regeneration.
 	else if (GetWorldTimerManager().IsTimerActive(StaminaRegenerateTimerHandle))
@@ -335,6 +339,9 @@ void AExterminatorMannequin::DepleteStamina()
 	{
 		// Deplete stamina
 		Stamina -= 0.05f;
+
+		// Calculate Stamina Ratio
+		StaminaRatio = (Stamina / MaxStamina);
 	}
 	// Player is exhausted.
 	else
@@ -386,10 +393,19 @@ void AExterminatorMannequin::PullTrigger()
 		}
 
 		// Yes. Tell Gun To Fire
-		CurrentWeapon->OnFire();	
+		CurrentWeapon->OnFire();
+
+		// Turn on auto firing
+		if (!GetWorldTimerManager().IsTimerActive(IndicatorTimerHandle))
+		{
+			GetWorldTimerManager().SetTimer(FireRateHandle, this, &AExterminatorMannequin::PullTrigger, CurrentWeapon->FireRate, true);
+		}
 	}
 	else if (CurrentWeapon->ClipSize <= 0)
 	{
+		// Stop auto firing
+		StopFiring();
+
 		// Call Reload
 		SetReload();
 	}
@@ -516,6 +532,17 @@ void AExterminatorMannequin::AttachWeaponToGripPoint()
 		CurrentWeapon->SetActorRelativeLocation(LocatePistol);
 	}
 
+	return;
+}
+
+// Stops auto firing
+void AExterminatorMannequin::StopFiring()
+{
+	if (GetWorldTimerManager().IsTimerActive(FireRateHandle))
+	{
+		GetWorldTimerManager().ClearTimer(FireRateHandle);
+	}
+	
 	return;
 }
 
@@ -670,6 +697,9 @@ void AExterminatorMannequin::Heal()
 			{
 				Health = MaxHealth;
 			}
+
+			// Update health ratio
+			HealthRatio = (Health / MaxHealth);
 
 			// Healing sound
 			UGameplayStatics::PlaySoundAtLocation(this, SoundHeal, GetActorLocation());

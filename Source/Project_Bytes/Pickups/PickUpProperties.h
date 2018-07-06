@@ -30,6 +30,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Details")
 	float LifeSpan = 60.0f;
 
+	// Will it be distructible?
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Details")
+	bool bDestructible = true;
+
 protected:
 	// Process pickup event
 	virtual void ProcessPickupEvent(AExterminatorMannequin * Player);

@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "UnrealMathUtility.h"
 #include "MonsterMannequin.h"
-#include "GameFramework/Actor.h"
+
 
 
 // Sets default values
@@ -42,8 +41,16 @@ bool AMonsterMannequin::TakeDamage(float BaseDamage, float ExtraDamage)
 {
 	Health -= (BaseDamage + ExtraDamage); //deducting and setting new health value
 	if (Health < 0.0) Health = 0.0; // checking bounds
-	if (Health) return false; //returning bool
-	else return true;
+	if (Health) //returning bool
+	{
+		isdead = false;
+		return false;
+	}
+	else
+	{
+		isdead = true;
+		return true;
+	}
 	//UE_LOG(LogTemp, Warning, TEXT("Successful"));
 }
 

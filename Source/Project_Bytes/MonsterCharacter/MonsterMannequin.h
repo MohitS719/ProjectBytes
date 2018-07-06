@@ -5,6 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "UnrealMathUtility.h"
+#include "GameFramework/Actor.h"
 #include "MonsterMannequin.generated.h"
 
 UCLASS()
@@ -32,6 +34,11 @@ public:
 	// Health is now in cpp declaring variable
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character Props")
 	float Health = 0.0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Character Props")
+	bool isdead = false;
+
+
 	// monster characteristics taking damage and setting new values
 	UFUNCTION(BlueprintCallable, Category = "Character Props")
 	bool TakeDamage(float BaseDamage, float extraDamage);

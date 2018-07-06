@@ -16,8 +16,11 @@ void AKillAllPickUp::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Starting life span
-	GetWorldTimerManager().SetTimer(LifeSpanTimerHandle, this, &AKillAllPickUp::DestroyActor, LifeSpan, true);
+	if (bDestructible)
+	{
+		// Starting life span
+		GetWorldTimerManager().SetTimer(LifeSpanTimerHandle, this, &AKillAllPickUp::DestroyActor, LifeSpan, true);
+	}
 }
 
 // Called every frame

@@ -14,8 +14,11 @@ void AKeyCard::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Starting life span
-	GetWorldTimerManager().SetTimer(LifeSpanTimerHandle, this, &AKeyCard::DestroyActor, LifeSpan, true);
+	if (bDestructible)
+	{
+		// Starting life span
+		GetWorldTimerManager().SetTimer(LifeSpanTimerHandle, this, &AKeyCard::DestroyActor, LifeSpan, true);
+	}
 }
 
 // Called every frame

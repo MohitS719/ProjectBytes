@@ -15,8 +15,11 @@ void AAmmoPickup::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Starting life span
-	GetWorldTimerManager().SetTimer(LifeSpanTimerHandle, this, &AAmmoPickup::DestroyActor, LifeSpan, true);
+	if (bDestructible)
+	{
+		// Starting life span
+		GetWorldTimerManager().SetTimer(LifeSpanTimerHandle, this, &AAmmoPickup::DestroyActor, LifeSpan, true);
+	}
 }
 
 // Called every frame

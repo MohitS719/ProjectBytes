@@ -61,6 +61,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
 	float WeaponDamage = 10.0;
 
+	// Rate of weapon fire
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Rotation Details")
+	float FireRate = 0.2f;
+
 	// Display player ammo full
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Weapon Details")
 	bool bDisplayAmmoFull = false;

@@ -70,7 +70,7 @@ Package project by finding the option under **Files** -> **Package Project** -> 
 **1.** Ben Tristem and Sam Pattuzzi, GameDev.tv, for their course **The Unreal Engine Developer Course - Learn C++ & Make Games** on udemy                            
 **2.** Tom Looman, Epic, for his detailed documentation and tutorials on Unreal Engine C++ Coding                                                     
 **3.** The people who put in effort to write the Unreal Engine Documentations                                                     
-**4.** The content creators at Unreal Engine COmmunity                                                     
+**4.** The content creators at Unreal Engine Community                                                     
 **5.** The people of Unreal Forums for helping us debug and learn                                                     
 **6.** Dark tension rising music by Mattia Cupelli                                                     
 **7.** Olympus by Ross Bugden                                                     

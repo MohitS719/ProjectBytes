@@ -1,4 +1,7 @@
 # **Project Bytes**
+## **Game Download link : (MediaFire) https://bit.ly/2OwZmHG** 
+          Mirror 1 : (Dropbox) https://bit.ly/2zBocjX
+          Mirror 2 : (Mega) https://bit.ly/2PGXrVF
 
 ## **Team Members**
 
